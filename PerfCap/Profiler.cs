@@ -7,18 +7,10 @@ using System.Threading.Tasks;
 
 namespace jPerf
 {
-    enum ProfilerState
-    {
-        Ready,
-        Recording,
-        Paused,
-        Stopped
-    }
     class Profiler
     {
         private List<Tracker> Trackers;
         private Stopwatch TimeKeeper;
-        private ProfilerState State;
         private int StepInterval;
 
         public Profiler(int StepInterval)
@@ -31,7 +23,6 @@ namespace jPerf
             //create stopwatch
             TimeKeeper = new Stopwatch();
             ResetTimeKeeper();
-            this.State = ProfilerState.Ready;
         }
 
         private void ResetTimeKeeper()
@@ -41,20 +32,17 @@ namespace jPerf
 
         public void StartRecording()
         {
-            if (this.State == ProfilerState.Ready)
-            {
-                TimeKeeper.Start();
-                this.State = ProfilerState.Recording;
-            }
-            else if(this.State == ProfilerState.Paused)
-            {
-                this.State = ProfilerState.Recording;
-            }
+            TimeKeeper.Start();
+        }
+
+        public double GetElapsedTime()
+        {
+            return this.TimeKeeper.Elapsed.TotalMilliseconds;
         }
 
         public void StopRecording()
         {
-            this.State = ProfilerState.Stopped;
+            this.TimeKeeper.Stop();
         }
 
         public void AddTracker(Tracker T)
@@ -64,12 +52,12 @@ namespace jPerf
 
         public void Update()
         {
-            if(this.State == ProfilerState.Recording)
+            if(this.TimeKeeper.IsRunning)
             {
                 //all trackers mark new points.
                 foreach (Tracker T in Trackers)
                 {
-                    T.Update(Convert.ToInt64(this.TimeKeeper.Elapsed.TotalMilliseconds));
+                    T.Update(this.TimeKeeper.Elapsed.TotalMilliseconds);
                 }
             }
         }
@@ -79,13 +67,14 @@ namespace jPerf
             return Trackers;
         }
 
-        public void SetState(ProfilerState State)
+        public double GetNumberOfSamples()
         {
-            this.State = State;
-        }
-        public ProfilerState GetState()
-        {
-            return this.State;
+            double SampleCount = 0;
+            foreach(Tracker T in this.Trackers)
+            {
+                SampleCount += T.GetSamples().Count();
+            }
+            return SampleCount;
         }
 
         ~Profiler()

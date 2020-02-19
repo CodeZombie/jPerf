@@ -11,8 +11,7 @@ namespace jPerf
     {
         private string name;
         private Func<Double> getNewSampleFunction;
-        private List<Double> SampleTimes;
-        private List<Double> SampleValues;
+        private List<Sample> Samples;
         private System.Drawing.Color Color;
 
         public Tracker(string name, System.Drawing.Color Color, Func<Double> getNewSampleFunction)
@@ -20,37 +19,28 @@ namespace jPerf
             Console.WriteLine("New Tracker Created");
             this.name = name;
             this.Color = Color;
-            this.SampleTimes = new List<Double>() {};
-            this.SampleValues = new List<Double>() {};
+            this.Samples = new List<Sample>() {};
             this.getNewSampleFunction = getNewSampleFunction;
         }
 
-        public void Update(Int64 time)
+        public void Update(double time)
         {
-            this.SampleTimes.Add(time);
-            this.SampleValues.Add(this.getNewSampleFunction());
+            this.AddSample(new Sample(this.getNewSampleFunction(), time));
         }
 
-        public Double[] GetSampleTimes()
+        public List<Sample> GetSamples()
         {
-
-            return this.SampleTimes.ToArray();
+            return this.Samples;
         }
 
-        public Double[] GetSampleValues()
+        public void AddSample(Sample Sample)
         {
-
-            return this.SampleValues.ToArray();
+            this.Samples.Add(Sample);
         }
-
-        public void SetSampleTimes(List<Double> SampleTimes)
+        
+        public void AddSamples(List<Sample> Samples)
         {
-            this.SampleTimes = SampleTimes;
-        }
-
-        public void SetSampleValues(List<Double> SampleValues)
-        {
-            this.SampleValues = SampleValues;
+            this.Samples.AddRange(Samples);
         }
 
         public string GetName()
@@ -65,16 +55,19 @@ namespace jPerf
 
         public void Clear()
         {
-            this.SampleTimes.Clear();
-            this.SampleValues.Clear();
+            this.Samples.Clear();
         }
 
         public object ToObject()
         {
+            List<Object> SampleObjects = new List<object>();
+            foreach (Sample S in this.Samples)
+            {
+                SampleObjects.Add(S.ToObject());
+            }
             return new
                 {
-                    SampleTimes = this.SampleTimes,
-                    SampleValues = this.SampleValues,
+                    Samples = SampleObjects,
                     Color_A = this.Color.A,
                     Color_R = this.Color.R,
                     Color_G = this.Color.G,

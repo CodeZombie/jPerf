@@ -13,9 +13,18 @@ using System.Text;
 using OxyPlot;
 using OxyPlot.Series;
 using OxyPlot.Axes;
+using PerfCap;
 
 namespace jPerf
 {
+
+    enum JPerfStates
+    {
+        Ready,
+        Recording,
+        Stopped
+    };
+
     public partial class Form1 : Form
     {
         private System.Windows.Forms.Timer UpdateTimer;
@@ -23,9 +32,11 @@ namespace jPerf
         private double LastProfilerUpdateTime;
         Profiler Profiler;
         private int TrackerUpdateSpeed = 500; //make sure this is divisible by 10.
+
+        private StateMachine StateMachine;
+
         public Form1()
         {
-
             InitializeComponent();
 
             //Definet the type of plot OxyPlot will use:
@@ -55,8 +66,63 @@ namespace jPerf
                 IsZoomEnabled = false,
             });
 
-            //Create a new Profiler and give it some Trackers to use by default.
-            DefineDefaultProfiler();
+            //Create new state machine, register the default state, and run it:
+            StateMachine = new StateMachine(new State((int)JPerfStates.Ready, () =>
+            {
+                //Clear Series from OxyPlot:
+                plotView1.Model.Series.Clear();
+
+                //Create a new profiler. The old one will be garbage collected.
+                Profiler = new Profiler(TrackerUpdateSpeed);
+
+                //Initialize Computer (For LibreHardwareMonitor)
+                Computer Computer = new Computer();
+                Computer.Open();
+                Computer.IsGpuEnabled = true;
+                Computer.IsCpuEnabled = true;
+
+                ISensor GpuLoad = Computer.Hardware
+                  .First(h => h.HardwareType == HardwareType.GpuAmd || h.HardwareType == HardwareType.GpuNvidia)
+                  .Sensors.First(s => s.SensorType == SensorType.Load);
+
+                //Initialize the CPU Idle time monitor from HWI.
+                PerformanceCounter cpuCounter = new PerformanceCounter("Processor", "% Idle Time", "_Total");
+                cpuCounter.NextValue();
+
+                AddTracker(new Tracker("GPU Load", System.Drawing.Color.FromArgb(255, 244, 67, 54), () => { GpuLoad.Hardware.Update(); return (double)GpuLoad.Value; }));
+                AddTracker(new Tracker("CPU Load", System.Drawing.Color.FromArgb(255, 33, 150, 243), () => { return 100.0 - (double)cpuCounter.NextValue(); }));
+
+
+                startRecordingToolStripMenuItem.Enabled = true;
+                stopRecordingToolStripMenuItem.Enabled = false;
+                this.Text = "jPerf (Ready)";
+                label1.SetBaseText("Ready.");
+                label1.Show();
+                plotView1.Hide();
+            }));
+
+            //register the other states:
+            StateMachine.AddState(new State((int)JPerfStates.Recording, () =>
+            {
+                Profiler.StartRecording();
+                startRecordingToolStripMenuItem.Enabled = false;
+                stopRecordingToolStripMenuItem.Enabled = true;
+                this.Text = "jPerf (Recording...) - *";
+                label1.SetBaseText("Recording...");
+                UpdateStopWatch.Start();
+            }));
+
+            StateMachine.AddState(new State((int)JPerfStates.Stopped, () =>
+            {
+                Profiler.StopRecording();
+                startRecordingToolStripMenuItem.Enabled = false;
+                stopRecordingToolStripMenuItem.Enabled = false;
+                this.Text = "jPerf (Stopped) - *";
+                label1.Hide();
+                plotView1.Show();
+                plotView1.Model.Axes[0].Zoom(0, Math.Floor(Profiler.GetElapsedTime()/1000));
+                Redraw();
+            }));
 
             //Initialize update timer
             UpdateTimer = new System.Windows.Forms.Timer();
@@ -66,52 +132,23 @@ namespace jPerf
 
             //Initialize Update Stopwatch:
             UpdateStopWatch = new Stopwatch();
-            UpdateStopWatch.Start();
             LastProfilerUpdateTime = UpdateStopWatch.Elapsed.TotalMilliseconds;
-        }
 
-        private void DefineDefaultProfiler()
-        {
-
-            //Clear Series from OxyPlot:
-            plotView1.Model.Series.Clear();
-
-            Profiler = new Profiler(TrackerUpdateSpeed);
-
-            //Initialize Computer (For LibreHardwareMonitor)
-            Computer Computer = new Computer();
-            Computer.Open();
-            Computer.IsGpuEnabled = true;
-            Computer.IsCpuEnabled = true;
-
-            ISensor GpuLoad = Computer.Hardware
-              .First(h => h.HardwareType == HardwareType.GpuAmd || h.HardwareType == HardwareType.GpuNvidia)
-              .Sensors.First(s => s.SensorType == SensorType.Load);
-
-            //Initialize the CPU Idle time monitor from HWI.
-            PerformanceCounter cpuCounter = new PerformanceCounter("Processor", "% Idle Time", "_Total");
-            cpuCounter.NextValue();
-
-            AddTracker(new Tracker("GPU Load", System.Drawing.Color.FromArgb(255, 244, 67, 54), () => { GpuLoad.Hardware.Update(); return (double)GpuLoad.Value; }));
-            AddTracker(new Tracker("CPU Load", System.Drawing.Color.FromArgb(255, 33, 150, 243), () => { return 100.0 - (double)cpuCounter.NextValue(); }));
-            ReactToProfilerStateChange();
         }
 
         private void Redraw()
         {
-
-            //its really quite simple.
-            //we find out where the bar is, and only draw a few points around it.
-            //Console.WriteLine(plotView1.Model.);
-            //Apply every data point from each Tracker to a corresponding Chart Series.
-            for (var tracker_i = 0; tracker_i < Profiler.GetTrackers().Count(); tracker_i++)
+            //For every tracker in the profiler...
+            for (var tracker_i = 0; tracker_i < this.Profiler.GetTrackers().Count(); tracker_i++)
             {
                 LineSeries LineSeries = ((LineSeries)plotView1.Model.Series[tracker_i]);
                 LineSeries.Points.Clear();
                 Tracker Tracker = Profiler.GetTrackers()[tracker_i];
-                for (int sample_i = 0; sample_i < Tracker.GetSampleTimes().Count(); sample_i++)
+
+                ///for every sample in each tracker...
+                foreach(Sample Sample in Tracker.GetSamples())
                 {
-                    LineSeries.Points.Add(new DataPoint(Tracker.GetSampleTimes()[sample_i] / 1000, Tracker.GetSampleValues()[sample_i]));
+                    LineSeries.Points.Add(new DataPoint(Sample.GetTime() / 1000, Sample.GetValue()));
                 }
             }
 
@@ -139,89 +176,32 @@ namespace jPerf
         private void UpdateTimer_Tick(object sender, EventArgs e)
         {
             double CurrentTime = UpdateStopWatch.Elapsed.TotalMilliseconds;
-            if(CurrentTime - LastProfilerUpdateTime > TrackerUpdateSpeed)
+            if(StateMachine.GetCurrentStateIndex() == (int)JPerfStates.Recording &&  CurrentTime - LastProfilerUpdateTime > TrackerUpdateSpeed)
             {
                 Profiler.Update();
                 LastProfilerUpdateTime = CurrentTime;
-            }
-        }
-
-
-        private void ReactToProfilerStateChange()
-        {
-            //get new state and do something based on that...
-            switch (Profiler.GetState())
-            {
-                case ProfilerState.Ready:
-                    startRecordingToolStripMenuItem.Enabled = true;
-                    stopRecordingToolStripMenuItem.Enabled = false;
-                    this.Text = "jPerf (Ready)";
-                    label1.Text = "Ready.";
-                    label1.Show();
-                    plotView1.Hide();
-                    break;
-                case ProfilerState.Recording:
-                    startRecordingToolStripMenuItem.Enabled = false;
-                    stopRecordingToolStripMenuItem.Enabled = true;
-                    this.Text = "jPerf (Recording...) - *";
-                    label1.Text = "Recording...";
-                    break;
-                case ProfilerState.Stopped:
-                    startRecordingToolStripMenuItem.Enabled = false;
-                    stopRecordingToolStripMenuItem.Enabled = false;
-                    this.Text = "jPerf (Stopped) - *";
-                    label1.Hide();
-                    plotView1.Show();
-                    Redraw();
-                    break;
+                label1.Update(Profiler.GetNumberOfSamples().ToString() + " samples");
             }
         }
 
         private void startRecordingToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            Profiler.StartRecording();
-            ReactToProfilerStateChange();
+            StateMachine.SetState((int)JPerfStates.Recording);
         }
 
         private void stopRecordingToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            Profiler.StopRecording();
-            ReactToProfilerStateChange();
+            StateMachine.SetState((int)JPerfStates.Stopped);
         }
 
-        //SAVE
         private void openToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            Profiler.StopRecording();
-            ReactToProfilerStateChange();
-
-            SaveFileDialog saveFileDialog1 = new SaveFileDialog();
-            saveFileDialog1.Filter = "jPerf Capture|*.jpc|JSON File|*.json";
-            saveFileDialog1.Title = "Save the capture file";
-            saveFileDialog1.AddExtension = true;
-            saveFileDialog1.ShowDialog();
-
-            if(saveFileDialog1.FileName != "")
-            {
-                List<object> data = new List<object>();
-                foreach(Tracker T in Profiler.GetTrackers())
-                {
-                    data.Add(T.ToObject());
-                }
-                File.WriteAllText(saveFileDialog1.FileName, JsonConvert.SerializeObject(data));
-                this.Text = "jPerf - " + saveFileDialog1.FileName;
-            }
-        }
-
-        //OPEN 
-        private void saveToolStripMenuItem_Click(object sender, EventArgs e)
         {
             OpenFileDialog openFileDialog1 = new OpenFileDialog();
             openFileDialog1.Filter = "jPerf Capture|*.jpc|JSON File|*.json";
             openFileDialog1.Title = "Open a capture file";
             openFileDialog1.ShowDialog();
 
-            if(openFileDialog1.FileName != "")
+            if (openFileDialog1.FileName != "")
             {
                 string TextData;
                 FileStream Stream = new FileStream(openFileDialog1.FileName, FileMode.Open, FileAccess.Read);
@@ -237,30 +217,62 @@ namespace jPerf
                 foreach (dynamic o in data)
                 {
                     string ProfilerName = o.Name;
-                    List<Double> FileSampleTimes = o.SampleTimes.ToObject<List<Double>>();
-                    List<Double> FileSampleValues = o.SampleValues.ToObject<List<Double>>();
+                    List<Sample> Samples = Sample.FromDynamicList(o.Samples<List<dynamic>>());
                     int Color_A = o.Color_A;
                     int Color_R = o.Color_R;
                     int Color_G = o.Color_G;
                     int Color_B = o.Color_B;
                     System.Drawing.Color Color = System.Drawing.Color.FromArgb(Color_A, Color_R, Color_G, Color_B);
                     Tracker T = new Tracker(ProfilerName, Color, () => { return 0.0; });
-                    T.SetSampleTimes(FileSampleTimes);
-                    T.SetSampleValues(FileSampleValues);
+                    T.AddSamples(Samples);
                     AddTracker(T);
 
-                    this.Profiler.StopRecording();
-                    ReactToProfilerStateChange();
+                    this.StateMachine.SetState((int)JPerfStates.Stopped);
                     this.Text = "jPerf - " + openFileDialog1.FileName;
                 }
             }
         }
 
+        //OPEN 
+        private void saveToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            this.StateMachine.SetState((int)JPerfStates.Stopped);
+
+            SaveFileDialog saveFileDialog1 = new SaveFileDialog();
+            saveFileDialog1.Filter = "jPerf Capture|*.jpc|JSON File|*.json";
+            saveFileDialog1.Title = "Save the capture file";
+            saveFileDialog1.AddExtension = true;
+            saveFileDialog1.ShowDialog();
+
+            if (saveFileDialog1.FileName != "")
+            {
+                List<object> data = new List<object>();
+                foreach (Tracker T in Profiler.GetTrackers())
+                {
+                    data.Add(T.ToObject());
+                }
+                File.WriteAllText(saveFileDialog1.FileName, JsonConvert.SerializeObject(data));
+                this.Text = "jPerf - " + saveFileDialog1.FileName;
+            }
+        }
+
         private void newToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            DefineDefaultProfiler();
-            ReactToProfilerStateChange();
-            Redraw();
+            this.StateMachine.SetState((int)JPerfStates.Ready);
+        }
+
+        private void exitToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if(StateMachine.GetCurrentStateIndex() != (int)JPerfStates.Ready)
+            {
+                DialogResult dialogResult = MessageBox.Show("Are you sure you want to exit? Unsaved data will be lost.", "Exit?", MessageBoxButtons.YesNo);
+                if (dialogResult == DialogResult.No)
+                {
+                    return;
+                }
+            }
+
+            Application.Exit();
         }
     }
 }

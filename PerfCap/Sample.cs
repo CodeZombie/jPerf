@@ -8,23 +8,43 @@ namespace jPerf
 {
     class Sample
     {
-        private double value;
-        private double time;
+        private double Value;
+        private double Time;
 
-        public Sample(double value, double time)
+        public static List<Sample> FromDynamicList(List<dynamic> ObjectList)
         {
-            this.value = value;
-            this.time = time;
+            List<Sample> SampleList = new List<Sample>();
+            foreach(dynamic O in ObjectList)
+            {
+                SampleList.Add(new Sample(O.Value.ToObject<Double>(), O.Time.ToObject<Double>()));
+            }
+            return SampleList;
         }
 
-        public double getValue()
+        public Sample(double Value, double Time)
         {
-            return this.value;
+            Console.WriteLine("Created Sample: " + Value.ToString() + " | Time: " + Time.ToString());
+            this.Value = Value;
+            this.Time = Time;
         }
 
-        public double getTime()
+        public double GetValue()
         {
-            return this.time;
+            return this.Value;
+        }
+
+        public double GetTime()
+        {
+            return this.Time;
+        }
+
+        public object ToObject()
+        {
+            return new
+            {
+                this.Value,
+                this.Time
+            };
         }
     }
 }
