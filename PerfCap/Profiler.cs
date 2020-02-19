@@ -74,6 +74,11 @@ namespace jPerf
             TimeKeeper.Start();
         }
 
+        public DateTime GetStartTime()
+        {
+            return this.StartTime;
+        }
+
         public void AddMarker(string Name)
         {
             Console.WriteLine("Added marker");

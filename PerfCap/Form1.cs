@@ -98,7 +98,8 @@ namespace jPerf
                 startRecordingToolStripMenuItem.Enabled = true;
                 stopRecordingToolStripMenuItem.Enabled = false;
                 this.Text = "jPerf (Ready)";
-                label1.SetBaseText("Ready.");
+                label1.Clear();
+                label1.UpdateText("base", "Ready.");
                 label1.Show();
                 plotView1.Hide();
             }));
@@ -112,7 +113,8 @@ namespace jPerf
                 startRecordingToolStripMenuItem.Enabled = false;
                 stopRecordingToolStripMenuItem.Enabled = true;
                 this.Text = "jPerf (Recording...) - *";
-                label1.SetBaseText("Recording...");
+                label1.UpdateText("base", "Recording...");
+                label1.UpdateText("StartTime", "Started: " + Profiler.GetStartTime().ToLongTimeString());
                 UpdateStopWatch.Start();
             }));
 
@@ -175,6 +177,7 @@ namespace jPerf
                     LineSeries.Points.Add(new DataPoint(Sample.GetTime() / 1000, Sample.GetValue()));
                 }
             }
+
             //Markers...
             plotView1.Model.Annotations.Clear();
 
@@ -183,9 +186,10 @@ namespace jPerf
                 plotView1.Model.Annotations.Add(new LineAnnotation()
                 {
                     StrokeThickness = 1,
-                    Color = OxyColors.Red,
+                    Color = OxyColors.Green,
                     Type = LineAnnotationType.Vertical,
                     Font = "Segoe",
+                    LineStyle = LineStyle.LongDash,
                     FontSize = 10,
                     Text = Marker.Name + " (" + Math.Round(Marker.Time / 1000, 2).ToString() + " s)",
                     TextColor = OxyColors.Black,
@@ -204,7 +208,8 @@ namespace jPerf
             {
                 Profiler.Update();
                 LastProfilerUpdateTime = CurrentTime;
-                label1.Update(Profiler.GetNumberOfSamples().ToString() + " samples");
+                label1.UpdateText("SampleCount", Profiler.GetNumberOfSamples().ToString() + " samples");
+                label1.UpdateText("TimeCount", Profiler.GetElapsedTime() + " ms");
             }
         }
 

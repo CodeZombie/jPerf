@@ -9,22 +9,35 @@ namespace PerfCap
 {
     class StatusLabel : Label
     {
-        private String BaseText;
+        private Dictionary<string, string> DynamicText;
 
         public StatusLabel()
         {
-            BaseText = "";
+            this.DynamicText = new Dictionary<string, string>();
         }
 
-        public void SetBaseText(string BaseText)
+        public void Clear()
         {
-            this.BaseText = BaseText;
-            this.Text = BaseText;
+            this.DynamicText.Clear();
+            this.Text = "";
         }
-        
-        public void Update(string ExtraText)
+
+        public void UpdateText(string Key, string Value)
         {
-            this.Text = BaseText + "\n" + ExtraText;
+            if (this.DynamicText.ContainsKey(Key))
+            {
+                this.DynamicText[Key] = Value;
+            }
+            else
+            {
+                this.DynamicText.Add(Key, Value);
+            }
+
+            this.Text = "";
+            foreach (KeyValuePair<string, string> entry in this.DynamicText)
+            {
+                this.Text += entry.Value + "\n";
+            }
         }
 
     }
