@@ -7,7 +7,14 @@ using System.Threading.Tasks;
 
 namespace PerfCap
 {
-
+    /*
+     * The State Machine.
+     * The State Machine consists of a List of States.
+     * States are an object containing a unique index, and an action.
+     * States are registered into the state machine, where they can then be activated by software.
+     * Activating a state triggers the corresponding function.
+     * TODO: Rules restricting which states can follow which.
+     * */
     class StateMachine
     {
         private List<State> States;

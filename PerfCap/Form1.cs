@@ -14,6 +14,7 @@ using OxyPlot;
 using OxyPlot.Series;
 using OxyPlot.Axes;
 using PerfCap;
+using OxyPlot.Annotations;
 
 namespace jPerf
 {
@@ -73,7 +74,7 @@ namespace jPerf
                 plotView1.Model.Series.Clear();
 
                 //Create a new profiler. The old one will be garbage collected.
-                Profiler = new Profiler(TrackerUpdateSpeed);
+                Profiler = new Profiler();
 
                 //Initialize Computer (For LibreHardwareMonitor)
                 Computer Computer = new Computer();
@@ -89,10 +90,11 @@ namespace jPerf
                 PerformanceCounter cpuCounter = new PerformanceCounter("Processor", "% Idle Time", "_Total");
                 cpuCounter.NextValue();
 
-                AddTracker(new Tracker("GPU Load", System.Drawing.Color.FromArgb(255, 244, 67, 54), () => { GpuLoad.Hardware.Update(); return (double)GpuLoad.Value; }));
-                AddTracker(new Tracker("CPU Load", System.Drawing.Color.FromArgb(255, 33, 150, 243), () => { return 100.0 - (double)cpuCounter.NextValue(); }));
+                Profiler.AddTracker(new Tracker("GPU Load", System.Drawing.Color.FromArgb(255, 244, 67, 54), () => { GpuLoad.Hardware.Update(); return (double)GpuLoad.Value; }));
+                Profiler.AddTracker(new Tracker("CPU Load", System.Drawing.Color.FromArgb(255, 33, 150, 243), () => { return 100.0 - (double)cpuCounter.NextValue(); }));
 
-
+                addFlagButton.Enabled = false;
+                jPXLogFileToolStripMenuItem.Enabled = false;
                 startRecordingToolStripMenuItem.Enabled = true;
                 stopRecordingToolStripMenuItem.Enabled = false;
                 this.Text = "jPerf (Ready)";
@@ -105,6 +107,8 @@ namespace jPerf
             StateMachine.AddState(new State((int)JPerfStates.Recording, () =>
             {
                 Profiler.StartRecording();
+                addFlagButton.Enabled = true;
+                jPXLogFileToolStripMenuItem.Enabled = false;
                 startRecordingToolStripMenuItem.Enabled = false;
                 stopRecordingToolStripMenuItem.Enabled = true;
                 this.Text = "jPerf (Recording...) - *";
@@ -115,6 +119,9 @@ namespace jPerf
             StateMachine.AddState(new State((int)JPerfStates.Stopped, () =>
             {
                 Profiler.StopRecording();
+
+                addFlagButton.Enabled = false;
+                jPXLogFileToolStripMenuItem.Enabled = true;
                 startRecordingToolStripMenuItem.Enabled = false;
                 stopRecordingToolStripMenuItem.Enabled = false;
                 this.Text = "jPerf (Stopped) - *";
@@ -138,10 +145,27 @@ namespace jPerf
 
         private void Redraw()
         {
+            //Clear and re-add all series:
+            plotView1.Model.Series.Clear();
+            foreach (Tracker Tracker in Profiler.GetTrackers())
+            {
+                plotView1.Model.Series.Add(new LineSeries()
+                {
+                    Color = OxyColor.FromArgb(Tracker.GetColor().A, Tracker.GetColor().R, Tracker.GetColor().G, Tracker.GetColor().B),
+                    MarkerType = MarkerType.None,
+                    MarkerSize = 3,
+                    MarkerStroke = OxyColor.FromArgb(Tracker.GetColor().A, Tracker.GetColor().R, Tracker.GetColor().G, Tracker.GetColor().B),
+                    MarkerStrokeThickness = 1.5,
+                    Title = Tracker.GetName(),
+                });
+            }
+
+
+
             //For every tracker in the profiler...
             for (var tracker_i = 0; tracker_i < this.Profiler.GetTrackers().Count(); tracker_i++)
             {
-                LineSeries LineSeries = ((LineSeries)plotView1.Model.Series[tracker_i]);
+                LineSeries LineSeries = (LineSeries)plotView1.Model.Series[tracker_i];
                 LineSeries.Points.Clear();
                 Tracker Tracker = Profiler.GetTrackers()[tracker_i];
 
@@ -151,26 +175,26 @@ namespace jPerf
                     LineSeries.Points.Add(new DataPoint(Sample.GetTime() / 1000, Sample.GetValue()));
                 }
             }
+            //Markers...
+            plotView1.Model.Annotations.Clear();
+
+            foreach(Marker Marker in this.Profiler.GetMarkers())
+            {
+                plotView1.Model.Annotations.Add(new LineAnnotation()
+                {
+                    StrokeThickness = 1,
+                    Color = OxyColors.Red,
+                    Type = LineAnnotationType.Vertical,
+                    Font = "Segoe",
+                    FontSize = 10,
+                    Text = Marker.Name + " (" + Math.Round(Marker.Time / 1000, 2).ToString() + " s)",
+                    TextColor = OxyColors.Black,
+                    X = Marker.Time / 1000
+                });
+            }
 
             plotView1.Model.InvalidatePlot(true);
-            //plotView1.Model.Axes[0].Zoom((programLoopStopwatch.ElapsedMilliseconds-10000)/1000, (programLoopStopwatch.ElapsedMilliseconds/1000));
             ((IPlotModel)plotView1.Model).Update(true);
-            //plotView1.Model.InvalidatePlot(true);
-        }
-
-        private void AddTracker(Tracker T)
-        {
-            Profiler.AddTracker(T);
-
-            plotView1.Model.Series.Add(new LineSeries()
-            {
-                Color = OxyColor.FromArgb(T.GetColor().A, T.GetColor().R, T.GetColor().G, T.GetColor().B),
-                MarkerType = MarkerType.None,
-                MarkerSize = 3,
-                MarkerStroke = OxyColor.FromArgb(T.GetColor().A, T.GetColor().R, T.GetColor().G, T.GetColor().B),
-                MarkerStrokeThickness = 1.5,
-                Title = T.GetName(),
-            });
         }
 
         private void UpdateTimer_Tick(object sender, EventArgs e)
@@ -194,6 +218,7 @@ namespace jPerf
             StateMachine.SetState((int)JPerfStates.Stopped);
         }
 
+        //Open
         private void openToolStripMenuItem_Click(object sender, EventArgs e)
         {
             OpenFileDialog openFileDialog1 = new OpenFileDialog();
@@ -209,31 +234,16 @@ namespace jPerf
                 {
                     TextData = Reader.ReadToEnd();
                 }
-                List<object> data = JsonConvert.DeserializeObject<List<object>>(TextData);
-                Profiler = new Profiler(TrackerUpdateSpeed);
+                
+                Profiler = Profiler.FromJson(TextData);
                 plotView1.Model.Series.Clear();
 
-                //create profilers:
-                foreach (dynamic o in data)
-                {
-                    string ProfilerName = o.Name;
-                    List<Sample> Samples = Sample.FromDynamicList(o.Samples<List<dynamic>>());
-                    int Color_A = o.Color_A;
-                    int Color_R = o.Color_R;
-                    int Color_G = o.Color_G;
-                    int Color_B = o.Color_B;
-                    System.Drawing.Color Color = System.Drawing.Color.FromArgb(Color_A, Color_R, Color_G, Color_B);
-                    Tracker T = new Tracker(ProfilerName, Color, () => { return 0.0; });
-                    T.AddSamples(Samples);
-                    AddTracker(T);
-
-                    this.StateMachine.SetState((int)JPerfStates.Stopped);
-                    this.Text = "jPerf - " + openFileDialog1.FileName;
-                }
+                this.StateMachine.SetState((int)JPerfStates.Stopped);
+                this.Text = "jPerf - " + openFileDialog1.FileName;
             }
         }
 
-        //OPEN 
+        //Save
         private void saveToolStripMenuItem_Click(object sender, EventArgs e)
         {
             this.StateMachine.SetState((int)JPerfStates.Stopped);
@@ -246,12 +256,7 @@ namespace jPerf
 
             if (saveFileDialog1.FileName != "")
             {
-                List<object> data = new List<object>();
-                foreach (Tracker T in Profiler.GetTrackers())
-                {
-                    data.Add(T.ToObject());
-                }
-                File.WriteAllText(saveFileDialog1.FileName, JsonConvert.SerializeObject(data));
+                File.WriteAllText(saveFileDialog1.FileName, this.Profiler.ToJson());
                 this.Text = "jPerf - " + saveFileDialog1.FileName;
             }
         }
@@ -273,6 +278,70 @@ namespace jPerf
             }
 
             Application.Exit();
+        }
+
+        private void addFlagButton_Click(object sender, EventArgs e)
+        {
+            double Time = this.Profiler.GetElapsedTime();
+
+            Form Prompt = new Form()
+            {
+                Width = 304,
+                Height = 132,
+                FormBorderStyle = FormBorderStyle.FixedDialog,
+                Text = "New Marker...",
+                StartPosition = FormStartPosition.CenterParent
+            };
+
+            //Text Box
+            TextBox TextBox = new TextBox() { Left = 16, Top = 32, Width = 256 };
+            Prompt.Controls.Add(TextBox);
+            TextBox.KeyUp += (object SenderObject, KeyEventArgs KeyEventArgs) => {
+                if(KeyEventArgs.KeyCode == Keys.Return)
+                {
+                    Prompt.DialogResult = DialogResult.OK;
+                    Prompt.Close();
+                }
+            };
+
+            //Label
+            Prompt.Controls.Add(new Label() { Left = 14, Top = 16, Text = "Name of marker: " });
+
+            //Confirm Button
+            Button ConfirmationButton = new Button() { Text = "Ok", Left = 128, Width = 64, Top = 64, DialogResult = DialogResult.OK };
+            Prompt.Controls.Add(ConfirmationButton);
+            ConfirmationButton.Click += (s, ea) => { Prompt.Close(); };
+
+            //Cancel Button
+            Button CloseButton = new Button() { Text = "Cancel", Left = 208, Width = 64, Top = 64, DialogResult = DialogResult.Cancel };
+            Prompt.Controls.Add(CloseButton);
+            CloseButton.Click += (s, ea) => { Prompt.Close(); };
+
+            if (Prompt.ShowDialog() == DialogResult.OK)
+            {
+                this.Profiler.AddMarker(TextBox.Text);
+            }
+        }
+
+        private void jPMLogFileToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            OpenFileDialog openFileDialog1 = new OpenFileDialog();
+            openFileDialog1.Filter = "jPerf Marker File|*.jpm|JSON File|*.json";
+            openFileDialog1.Title = "Open Marker file";
+            openFileDialog1.ShowDialog();
+
+            if (openFileDialog1.FileName != "")
+            {
+                string TextData;
+                FileStream Stream = new FileStream(openFileDialog1.FileName, FileMode.Open, FileAccess.Read);
+                using (StreamReader Reader = new StreamReader(Stream, Encoding.UTF8))
+                {
+                    TextData = Reader.ReadToEnd();
+                }
+
+                this.Profiler.AddMarkerFile(TextData);
+            }
+            Redraw();
         }
     }
 }

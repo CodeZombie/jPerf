@@ -33,12 +33,15 @@
             this.toolStripDropDownButton1 = new System.Windows.Forms.ToolStripDropDownButton();
             this.newToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.openToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.importToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.jPXLogFileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.saveToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripDropDownButton2 = new System.Windows.Forms.ToolStripDropDownButton();
             this.startRecordingToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.stopRecordingToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.addFlagButton = new System.Windows.Forms.ToolStripButton();
             this.plotView1 = new OxyPlot.WindowsForms.PlotView();
             this.label1 = new PerfCap.StatusLabel();
             this.toolStrip1.SuspendLayout();
@@ -49,7 +52,8 @@
             this.toolStrip1.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden;
             this.toolStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.toolStripDropDownButton1,
-            this.toolStripDropDownButton2});
+            this.toolStripDropDownButton2,
+            this.addFlagButton});
             this.toolStrip1.Location = new System.Drawing.Point(0, 0);
             this.toolStrip1.Name = "toolStrip1";
             this.toolStrip1.RenderMode = System.Windows.Forms.ToolStripRenderMode.System;
@@ -63,6 +67,7 @@
             this.toolStripDropDownButton1.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.newToolStripMenuItem,
             this.openToolStripMenuItem,
+            this.importToolStripMenuItem,
             this.saveToolStripMenuItem,
             this.toolStripSeparator1,
             this.exitToolStripMenuItem});
@@ -85,6 +90,21 @@
             this.openToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.openToolStripMenuItem.Text = "Open";
             this.openToolStripMenuItem.Click += new System.EventHandler(this.openToolStripMenuItem_Click);
+            // 
+            // importToolStripMenuItem
+            // 
+            this.importToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.jPXLogFileToolStripMenuItem});
+            this.importToolStripMenuItem.Name = "importToolStripMenuItem";
+            this.importToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.importToolStripMenuItem.Text = "Import";
+            // 
+            // jPXLogFileToolStripMenuItem
+            // 
+            this.jPXLogFileToolStripMenuItem.Name = "jPXLogFileToolStripMenuItem";
+            this.jPXLogFileToolStripMenuItem.Size = new System.Drawing.Size(196, 22);
+            this.jPXLogFileToolStripMenuItem.Text = "JPerf Marker File (.JPM)";
+            this.jPXLogFileToolStripMenuItem.Click += new System.EventHandler(this.jPMLogFileToolStripMenuItem_Click);
             // 
             // saveToolStripMenuItem
             // 
@@ -131,6 +151,17 @@
             this.stopRecordingToolStripMenuItem.Size = new System.Drawing.Size(155, 22);
             this.stopRecordingToolStripMenuItem.Text = "Stop Recording";
             this.stopRecordingToolStripMenuItem.Click += new System.EventHandler(this.stopRecordingToolStripMenuItem_Click);
+            // 
+            // addFlagButton
+            // 
+            this.addFlagButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.addFlagButton.Enabled = false;
+            this.addFlagButton.Image = global::PerfCap.Properties.Resources.FlagIcon_red;
+            this.addFlagButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.addFlagButton.Name = "addFlagButton";
+            this.addFlagButton.Size = new System.Drawing.Size(23, 22);
+            this.addFlagButton.Text = "Capture Marker";
+            this.addFlagButton.Click += new System.EventHandler(this.addFlagButton_Click);
             // 
             // plotView1
             // 
@@ -187,6 +218,9 @@
         private System.Windows.Forms.ToolStripMenuItem stopRecordingToolStripMenuItem;
         private OxyPlot.WindowsForms.PlotView plotView1;
         private PerfCap.StatusLabel label1;
+        private System.Windows.Forms.ToolStripButton addFlagButton;
+        private System.Windows.Forms.ToolStripMenuItem importToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem jPXLogFileToolStripMenuItem;
     }
 }
 

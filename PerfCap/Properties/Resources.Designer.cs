@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace jPerf.Properties {
+namespace PerfCap.Properties {
     using System;
     
     
@@ -57,6 +57,36 @@ namespace jPerf.Properties {
             }
             set {
                 resourceCulture = value;
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap FlagIcon {
+            get {
+                object obj = ResourceManager.GetObject("FlagIcon", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap FlagIcon_red {
+            get {
+                object obj = ResourceManager.GetObject("FlagIcon_red", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap FlagIcon_red_disabled {
+            get {
+                object obj = ResourceManager.GetObject("FlagIcon_red_disabled", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
             }
         }
     }
