@@ -68,6 +68,47 @@ namespace jPerf
                 IsZoomEnabled = false,
             });
 
+            //Create radio/checkbox buttons:
+            showMarkersToolStripMenuItem.SetTicked(true);
+
+            showMarkersToolStripMenuItem.OnTicked(() =>
+            {
+                Profiler.SetShowMarkers(showMarkersToolStripMenuItem.Ticked);
+                Redraw();
+            });
+
+            showMarkersToolStripMenuItem.OnUnticked(() =>
+            {
+                Profiler.SetShowMarkers(showMarkersToolStripMenuItem.Ticked);
+                Redraw();
+            });
+
+            ///None
+            noneToolStripMenuItem.SetOnTicked(() =>
+            {
+                Profiler.SetSmoothMode(0);
+                Redraw();
+            });
+            //Moderate
+            moderateToolStripMenuItem.SetOnTicked(() =>
+            {
+                Profiler.SetSmoothMode(1);
+                Redraw();
+            });
+            //High
+            highToolStripMenuItem.SetOnTicked(() =>
+            {
+                Profiler.SetSmoothMode(2);
+                Redraw();
+            });
+
+            SmoothRadioButtonGroup = new RadioButtonGroup(new List<ToolStripRadioButton>
+                {
+                    noneToolStripMenuItem,
+                    moderateToolStripMenuItem,
+                    highToolStripMenuItem
+                });
+
             //Create new state machine, register the default state, and run it:
             StateMachine = new StateMachine(new State((int)JPerfStates.Ready, () =>
             {
@@ -76,47 +117,6 @@ namespace jPerf
 
                 //Create a new profiler. The old one will be garbage collected.
                 Profiler = new Profiler();
-
-                //Create radio/checkbox buttons:
-                showMarkersToolStripMenuItem.SetTicked(true);
-
-                showMarkersToolStripMenuItem.OnTicked(() =>
-                {
-                    Profiler.SetShowMarkers(showMarkersToolStripMenuItem.Ticked);
-                    Redraw();
-                });
-
-                showMarkersToolStripMenuItem.OnUnticked(() =>
-                {
-                    Profiler.SetShowMarkers(showMarkersToolStripMenuItem.Ticked);
-                    Redraw();
-                });
-
-                ///None
-                noneToolStripMenuItem.OnTicked(() =>
-                {
-                    Profiler.SetSmoothMode(0);
-                    Redraw();
-                });
-                //Moderate
-                moderateToolStripMenuItem.OnTicked(() =>
-                {
-                    Profiler.SetSmoothMode(1);
-                    Redraw();
-                });
-                //High
-                highToolStripMenuItem.OnTicked(() =>
-                {
-                    Profiler.SetSmoothMode(2);
-                    Redraw();
-                });
-
-                SmoothRadioButtonGroup = new RadioButtonGroup(new List<ToolStripRadioButton>
-                {
-                    noneToolStripMenuItem,
-                    moderateToolStripMenuItem,
-                    highToolStripMenuItem
-                });
 
                 //Initialize Computer (For LibreHardwareMonitor)
                 Computer Computer = new Computer();
@@ -139,6 +139,11 @@ namespace jPerf
                 jPXLogFileToolStripMenuItem.Enabled = false;
                 startRecordingToolStripMenuItem.Enabled = true;
                 stopRecordingToolStripMenuItem.Enabled = false;
+                smoothModeToolStripMenuItem.Enabled = false;
+                SmoothRadioButtonGroup.SetEnabled(false);
+                Profiler.SetShowMarkers(showMarkersToolStripMenuItem.Ticked);
+                Profiler.SetSmoothMode(SmoothRadioButtonGroup.GetSelected());
+                showMarkersToolStripMenuItem.Enabled = false;
                 this.Text = "jPerf (Ready)";
                 label1.Clear();
                 label1.UpdateText("base", "Ready.");
@@ -168,6 +173,10 @@ namespace jPerf
                 jPXLogFileToolStripMenuItem.Enabled = true;
                 startRecordingToolStripMenuItem.Enabled = false;
                 stopRecordingToolStripMenuItem.Enabled = false;
+                smoothModeToolStripMenuItem.Enabled = true;
+                showMarkersToolStripMenuItem.Enabled = true;
+                SmoothRadioButtonGroup.SetEnabled(true);
+
                 this.Text = "jPerf (Stopped) - *";
                 label1.Hide();
                 plotView1.Show();
@@ -175,6 +184,7 @@ namespace jPerf
                 Profiler.SetShowMarkers(showMarkersToolStripMenuItem.Ticked);
                 Profiler.SetSmoothMode(SmoothRadioButtonGroup.GetSelected());
                 Redraw();
+                Console.WriteLine("SELECTED SMOOTH MODE: " + SmoothRadioButtonGroup.GetSelected().ToString());
             }));
 
             //Initialize update timer

@@ -50,9 +50,9 @@ namespace jPerf
             this.plotView1 = new OxyPlot.WindowsForms.PlotView();
             this.label1 = new PerfCap.StatusLabel();
             this.showMarkersToolStripMenuItem = new PerfCap.ToolStripCheckBoxButton("Show Markers");
-            this.noneToolStripMenuItem = new PerfCap.ToolStripRadioButton("None");
-            this.moderateToolStripMenuItem = new PerfCap.ToolStripRadioButton("Moderate");
-            this.highToolStripMenuItem = new PerfCap.ToolStripRadioButton("High");
+            this.noneToolStripMenuItem = new PerfCap.ToolStripRadioButton("None", 0);
+            this.moderateToolStripMenuItem = new PerfCap.ToolStripRadioButton("Moderate", 1);
+            this.highToolStripMenuItem = new PerfCap.ToolStripRadioButton("High", 2);
             this.toolStrip1.SuspendLayout();
             this.SuspendLayout();
             // 

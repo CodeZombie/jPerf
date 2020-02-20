@@ -9,48 +9,35 @@ namespace PerfCap
 {
     class ToolStripRadioButton : ToolStripMenuItem
     {
-
-        private bool Ticked;
         private string BaseText;
         private Action OnTickedAction;
-        private Action OnUntickedAction;
+        private int Index;
 
-        public ToolStripRadioButton(string BaseText)
+        public ToolStripRadioButton(string BaseText, int Index)
         {
-            Ticked = false;
+            this.Index = Index;
             this.BaseText = BaseText;
-            UpdateText();
+            UpdateText(false);
         }
 
-        public void UpdateText()
+        public int GetIndex()
         {
-            this.Text = (this.Ticked ? "⬤ " : "○ ").ToString() + this.BaseText;
+            return this.Index;
         }
 
-        public bool IsTicked()
+        public void UpdateText(bool Ticked)
         {
-            return Ticked;
+            this.Text = (Ticked ? "⬤ " : "○ ").ToString() + this.BaseText;
         }
 
-        public void SetTicked(bool Ticked)
-        {
-            if(this.Ticked != Ticked)
-            {
-                (Ticked ? this.OnTickedAction : this.OnUntickedAction)?.Invoke();
-            }
-
-            this.Ticked = Ticked;
-            UpdateText();
-        }
-
-        public void OnTicked(Action OnTickedAction)
+        public void SetOnTicked(Action OnTickedAction)
         {
             this.OnTickedAction = OnTickedAction;
         }
 
-        public void OnUnticked(Action OnUntickedAction)
+        public void OnTicked()
         {
-            this.OnUntickedAction = OnUntickedAction;
+            this.OnTickedAction?.Invoke();
         }
     }
 }

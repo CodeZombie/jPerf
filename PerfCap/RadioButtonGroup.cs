@@ -10,44 +10,56 @@ namespace PerfCap
     {
 
         List<ToolStripRadioButton> RadioButtons;
+        private int Selected;
 
         public RadioButtonGroup(List<ToolStripRadioButton> RadioButtons)
         {
+            this.Selected = 0;
             this.RadioButtons = RadioButtons;
-            foreach(ToolStripRadioButton RadioButton in RadioButtons)
+            foreach (ToolStripRadioButton Button in RadioButtons)
             {
-                RadioButton.Click += (sender, e) =>
+                Button.Click += (sender, e) =>
                 {
                     foreach (ToolStripRadioButton B in RadioButtons)
                     {
-                        B.SetTicked(false);
+                        B.UpdateText(false);
                     }
-                    RadioButton.SetTicked(true);
+                    Button.UpdateText(true);
+                    Button.OnTicked();
+                    this.Select(Button.GetIndex());
                 };
-                RadioButton.UpdateText();
             }
-            RadioButtons[0].SetTicked(true);
+            this.Reset();
         }
 
         public void Reset()
         {
             foreach (ToolStripRadioButton Button in RadioButtons)
             {
-                Button.SetTicked(false);
+                Button.UpdateText(false);
             }
-            RadioButtons[0].SetTicked(true);
+            RadioButtons[0].UpdateText(true);
+        }
+
+        public void Select(int Index)
+        {
+            Console.WriteLine("SMooth Sleecetd: " + Index.ToString());
+            this.Selected = Index;
+
         }
 
         public int GetSelected()
         {
-            for(int i = 0; i < RadioButtons.Count(); i++)
+            return this.Selected;
+        }
+
+
+        public void SetEnabled(bool Enabled)
+        {
+            foreach (ToolStripRadioButton Button in RadioButtons)
             {
-                if (RadioButtons[i].IsTicked())
-                {
-                    return i;
-                }
+                Button.Enabled = Enabled;
             }
-            return -1;
         }
     }
 }
