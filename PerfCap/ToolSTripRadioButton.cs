@@ -27,6 +27,11 @@ namespace PerfCap
             this.Text = (this.Ticked ? "⬤ " : "○ ").ToString() + this.BaseText;
         }
 
+        public bool IsTicked()
+        {
+            return Ticked;
+        }
+
         public void SetTicked(bool Ticked)
         {
             if(this.Ticked != Ticked)

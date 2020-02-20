@@ -36,7 +36,7 @@ namespace jPerf
 
         private StateMachine StateMachine;
 
-        private RadioButtonGroup RadioButtonGroup;
+        private RadioButtonGroup SmoothRadioButtonGroup;
         public Form1()
         {
             InitializeComponent();
@@ -74,7 +74,6 @@ namespace jPerf
                 //Clear Series from OxyPlot:
                 plotView1.Model.Series.Clear();
 
-
                 //Create a new profiler. The old one will be garbage collected.
                 Profiler = new Profiler();
 
@@ -83,13 +82,14 @@ namespace jPerf
 
                 showMarkersToolStripMenuItem.OnTicked(() =>
                 {
-                    Console.WriteLine("SHOW MARKERS TICKED");
+                    Profiler.SetShowMarkers(showMarkersToolStripMenuItem.Ticked);
+                    Redraw();
                 });
 
                 showMarkersToolStripMenuItem.OnUnticked(() =>
                 {
-                    Console.WriteLine("SHOW MARKERS UN TICKED");
-
+                    Profiler.SetShowMarkers(showMarkersToolStripMenuItem.Ticked);
+                    Redraw();
                 });
 
                 ///None
@@ -111,7 +111,7 @@ namespace jPerf
                     Redraw();
                 });
 
-                RadioButtonGroup = new RadioButtonGroup(new List<ToolStripRadioButton>
+                SmoothRadioButtonGroup = new RadioButtonGroup(new List<ToolStripRadioButton>
                 {
                     noneToolStripMenuItem,
                     moderateToolStripMenuItem,
@@ -144,7 +144,6 @@ namespace jPerf
                 label1.UpdateText("base", "Ready.");
                 label1.Show();
                 plotView1.Hide();
-                RadioButtonGroup.Reset();
             }));
 
             //register the other states:
@@ -173,8 +172,9 @@ namespace jPerf
                 label1.Hide();
                 plotView1.Show();
                 plotView1.Model.Axes[0].Zoom(0, Math.Floor(Profiler.GetElapsedTime()/1000));
+                Profiler.SetShowMarkers(showMarkersToolStripMenuItem.Ticked);
+                Profiler.SetSmoothMode(SmoothRadioButtonGroup.GetSelected());
                 Redraw();
-                RadioButtonGroup.Reset();
             }));
 
             //Initialize update timer

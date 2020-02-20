@@ -15,13 +15,14 @@ namespace jPerf
         private Stopwatch TimeKeeper;
         private List<Marker> Markers;
         private DateTime StartTime;
+        private bool ShowMarkers;
 
         public Profiler()
         {
             Console.WriteLine("New Profiler Created");
             //instantiate trackers
             Trackers = new List<Tracker>();
-
+            this.ShowMarkers = true;
             //create stopwatch
             TimeKeeper = new Stopwatch();
             ResetTimeKeeper();
@@ -70,7 +71,10 @@ namespace jPerf
 
             return NewProfiler;
         }
-
+        public void SetShowMarkers(bool ShowMarkers)
+        {
+            this.ShowMarkers = ShowMarkers;
+        }
         private void ResetTimeKeeper()
         {
             TimeKeeper.Reset();
@@ -95,7 +99,7 @@ namespace jPerf
 
         public List<Marker> GetMarkers()
         {
-            return this.Markers;
+            return this.ShowMarkers ? this.Markers : new List<Marker>() { };
         }
 
         public double GetElapsedTime()

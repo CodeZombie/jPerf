@@ -38,5 +38,16 @@ namespace PerfCap
             RadioButtons[0].SetTicked(true);
         }
 
+        public int GetSelected()
+        {
+            for(int i = 0; i < RadioButtons.Count(); i++)
+            {
+                if (RadioButtons[i].IsTicked())
+                {
+                    return i;
+                }
+            }
+            return -1;
+        }
     }
 }
