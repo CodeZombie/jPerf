@@ -1,4 +1,7 @@
-﻿namespace jPerf
+﻿using PerfCap;
+using System.Windows.Forms;
+
+namespace jPerf
 {
     partial class Form1
     {
@@ -38,12 +41,18 @@
             this.saveToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripDropDownButton3 = new System.Windows.Forms.ToolStripDropDownButton();
+            this.smoothModeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripDropDownButton2 = new System.Windows.Forms.ToolStripDropDownButton();
             this.startRecordingToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.stopRecordingToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.addFlagButton = new System.Windows.Forms.ToolStripButton();
             this.plotView1 = new OxyPlot.WindowsForms.PlotView();
             this.label1 = new PerfCap.StatusLabel();
+            this.showMarkersToolStripMenuItem = new PerfCap.ToolStripCheckBoxButton("Show Markers");
+            this.noneToolStripMenuItem = new PerfCap.ToolStripRadioButton("None");
+            this.moderateToolStripMenuItem = new PerfCap.ToolStripRadioButton("Moderate");
+            this.highToolStripMenuItem = new PerfCap.ToolStripRadioButton("High");
             this.toolStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -52,6 +61,7 @@
             this.toolStrip1.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden;
             this.toolStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.toolStripDropDownButton1,
+            this.toolStripDropDownButton3,
             this.toolStripDropDownButton2,
             this.addFlagButton});
             this.toolStrip1.Location = new System.Drawing.Point(0, 0);
@@ -80,14 +90,14 @@
             // newToolStripMenuItem
             // 
             this.newToolStripMenuItem.Name = "newToolStripMenuItem";
-            this.newToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.newToolStripMenuItem.Size = new System.Drawing.Size(110, 22);
             this.newToolStripMenuItem.Text = "New";
             this.newToolStripMenuItem.Click += new System.EventHandler(this.newToolStripMenuItem_Click);
             // 
             // openToolStripMenuItem
             // 
             this.openToolStripMenuItem.Name = "openToolStripMenuItem";
-            this.openToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.openToolStripMenuItem.Size = new System.Drawing.Size(110, 22);
             this.openToolStripMenuItem.Text = "Open";
             this.openToolStripMenuItem.Click += new System.EventHandler(this.openToolStripMenuItem_Click);
             // 
@@ -96,7 +106,7 @@
             this.importToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.jPXLogFileToolStripMenuItem});
             this.importToolStripMenuItem.Name = "importToolStripMenuItem";
-            this.importToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.importToolStripMenuItem.Size = new System.Drawing.Size(110, 22);
             this.importToolStripMenuItem.Text = "Import";
             // 
             // jPXLogFileToolStripMenuItem
@@ -109,21 +119,43 @@
             // saveToolStripMenuItem
             // 
             this.saveToolStripMenuItem.Name = "saveToolStripMenuItem";
-            this.saveToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.saveToolStripMenuItem.Size = new System.Drawing.Size(110, 22);
             this.saveToolStripMenuItem.Text = "Save";
             this.saveToolStripMenuItem.Click += new System.EventHandler(this.saveToolStripMenuItem_Click);
             // 
             // toolStripSeparator1
             // 
             this.toolStripSeparator1.Name = "toolStripSeparator1";
-            this.toolStripSeparator1.Size = new System.Drawing.Size(177, 6);
+            this.toolStripSeparator1.Size = new System.Drawing.Size(107, 6);
             // 
             // exitToolStripMenuItem
             // 
             this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
-            this.exitToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.exitToolStripMenuItem.Size = new System.Drawing.Size(110, 22);
             this.exitToolStripMenuItem.Text = "Exit";
             this.exitToolStripMenuItem.Click += new System.EventHandler(this.exitToolStripMenuItem_Click);
+            // 
+            // toolStripDropDownButton3
+            // 
+            this.toolStripDropDownButton3.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+            this.toolStripDropDownButton3.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.showMarkersToolStripMenuItem,
+            this.smoothModeToolStripMenuItem});
+            this.toolStripDropDownButton3.Image = ((System.Drawing.Image)(resources.GetObject("toolStripDropDownButton3.Image")));
+            this.toolStripDropDownButton3.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.toolStripDropDownButton3.Name = "toolStripDropDownButton3";
+            this.toolStripDropDownButton3.Size = new System.Drawing.Size(45, 22);
+            this.toolStripDropDownButton3.Text = "View";
+            // 
+            // smoothModeToolStripMenuItem
+            // 
+            this.smoothModeToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.noneToolStripMenuItem,
+            this.moderateToolStripMenuItem,
+            this.highToolStripMenuItem});
+            this.smoothModeToolStripMenuItem.Name = "smoothModeToolStripMenuItem";
+            this.smoothModeToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.smoothModeToolStripMenuItem.Text = "Smooth Mode";
             // 
             // toolStripDropDownButton2
             // 
@@ -188,6 +220,30 @@
             this.label1.Text = "label1";
             this.label1.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
+            // showMarkersToolStripMenuItem
+            // 
+            this.showMarkersToolStripMenuItem.Name = "showMarkersToolStripMenuItem";
+            this.showMarkersToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.showMarkersToolStripMenuItem.Text = "Show Markers";
+            // 
+            // noneToolStripMenuItem
+            // 
+            this.noneToolStripMenuItem.Name = "noneToolStripMenuItem";
+            this.noneToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.noneToolStripMenuItem.Text = "None";
+            // 
+            // moderateToolStripMenuItem
+            // 
+            this.moderateToolStripMenuItem.Name = "moderateToolStripMenuItem";
+            this.moderateToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.moderateToolStripMenuItem.Text = "Moderate";
+            // 
+            // highToolStripMenuItem
+            // 
+            this.highToolStripMenuItem.Name = "highToolStripMenuItem";
+            this.highToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.highToolStripMenuItem.Text = "High";
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -221,6 +277,12 @@
         private System.Windows.Forms.ToolStripButton addFlagButton;
         private System.Windows.Forms.ToolStripMenuItem importToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem jPXLogFileToolStripMenuItem;
+        private System.Windows.Forms.ToolStripDropDownButton toolStripDropDownButton3;
+        private System.Windows.Forms.ToolStripMenuItem smoothModeToolStripMenuItem;
+        private ToolStripCheckBoxButton showMarkersToolStripMenuItem;
+        private ToolStripRadioButton noneToolStripMenuItem;
+        private ToolStripRadioButton moderateToolStripMenuItem;
+        private ToolStripRadioButton highToolStripMenuItem;
     }
 }
 

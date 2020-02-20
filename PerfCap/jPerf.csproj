@@ -88,9 +88,16 @@
     </Compile>
     <Compile Include="Marker.cs" />
     <Compile Include="Profiler.cs" />
+    <Compile Include="RadioButtonGroup.cs" />
     <Compile Include="State.cs" />
     <Compile Include="StateMachine.cs" />
     <Compile Include="StatusLabel.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="ToolStripCheckBoxButton.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="ToolStripRadioButton.cs">
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="Tracker.cs" />

@@ -30,6 +30,14 @@ namespace jPerf
             Markers = new List<Marker>();
         }
 
+        public void SetSmoothMode(int Mode)
+        {
+            foreach (Tracker Tracker in this.Trackers)
+            {
+                Tracker.SetSmoothMode(Mode);
+            }
+        }
+
         public static Profiler FromJson(string JsonString)
         {
             Profiler NewProfiler = new Profiler();

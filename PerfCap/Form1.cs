@@ -36,6 +36,7 @@ namespace jPerf
 
         private StateMachine StateMachine;
 
+        private RadioButtonGroup RadioButtonGroup;
         public Form1()
         {
             InitializeComponent();
@@ -73,8 +74,49 @@ namespace jPerf
                 //Clear Series from OxyPlot:
                 plotView1.Model.Series.Clear();
 
+
                 //Create a new profiler. The old one will be garbage collected.
                 Profiler = new Profiler();
+
+                //Create radio/checkbox buttons:
+                showMarkersToolStripMenuItem.SetTicked(true);
+
+                showMarkersToolStripMenuItem.OnTicked(() =>
+                {
+                    Console.WriteLine("SHOW MARKERS TICKED");
+                });
+
+                showMarkersToolStripMenuItem.OnUnticked(() =>
+                {
+                    Console.WriteLine("SHOW MARKERS UN TICKED");
+
+                });
+
+                ///None
+                noneToolStripMenuItem.OnTicked(() =>
+                {
+                    Profiler.SetSmoothMode(0);
+                    Redraw();
+                });
+                //Moderate
+                moderateToolStripMenuItem.OnTicked(() =>
+                {
+                    Profiler.SetSmoothMode(1);
+                    Redraw();
+                });
+                //High
+                highToolStripMenuItem.OnTicked(() =>
+                {
+                    Profiler.SetSmoothMode(2);
+                    Redraw();
+                });
+
+                RadioButtonGroup = new RadioButtonGroup(new List<ToolStripRadioButton>
+                {
+                    noneToolStripMenuItem,
+                    moderateToolStripMenuItem,
+                    highToolStripMenuItem
+                });
 
                 //Initialize Computer (For LibreHardwareMonitor)
                 Computer Computer = new Computer();
@@ -102,6 +144,7 @@ namespace jPerf
                 label1.UpdateText("base", "Ready.");
                 label1.Show();
                 plotView1.Hide();
+                RadioButtonGroup.Reset();
             }));
 
             //register the other states:
@@ -131,6 +174,7 @@ namespace jPerf
                 plotView1.Show();
                 plotView1.Model.Axes[0].Zoom(0, Math.Floor(Profiler.GetElapsedTime()/1000));
                 Redraw();
+                RadioButtonGroup.Reset();
             }));
 
             //Initialize update timer
@@ -142,7 +186,6 @@ namespace jPerf
             //Initialize Update Stopwatch:
             UpdateStopWatch = new Stopwatch();
             LastProfilerUpdateTime = UpdateStopWatch.Elapsed.TotalMilliseconds;
-
         }
 
         private void Redraw()
