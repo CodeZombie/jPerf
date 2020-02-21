@@ -91,10 +91,10 @@ namespace jPerf
             return this.StartTime;
         }
 
-        public void AddMarker(string Name)
+        public void AddMarker(double Time, string Name)
         {
             Console.WriteLine("Added marker");
-            this.Markers.Add(new Marker(Name, this.TimeKeeper.Elapsed.TotalMilliseconds));
+            this.Markers.Add(new Marker(Name, Time));
         }
 
         public List<Marker> GetMarkers()
@@ -171,7 +171,7 @@ namespace jPerf
                 DateTime Time = DateTime.ParseExact((string)M.time, "yyyy-MM-dd HH:mm:ss", new System.Globalization.CultureInfo("en-US"));
                 //get offset, in millis, between the time this profiler was started, and the time in startTime
                 Console.WriteLine("Adding Marker: " + (string)M.title + " || " + Time.ToLongTimeString());
-                this.Markers.Add(new PerfCap.Marker((string)M.title, Time.Subtract(this.StartTime).TotalMilliseconds));
+                this.AddMarker(Time.Subtract(this.StartTime).TotalMilliseconds, (string)M.title);
             }
         }
 

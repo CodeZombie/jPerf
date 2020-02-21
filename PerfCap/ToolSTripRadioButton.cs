@@ -13,10 +13,10 @@ namespace PerfCap
         private Action OnTickedAction;
         private int Index;
 
-        public ToolStripRadioButton(string BaseText, int Index)
+        public ToolStripRadioButton()
         {
-            this.Index = Index;
-            this.BaseText = BaseText;
+            this.Index = 69;
+            this.BaseText = "Hello";
             UpdateText(false);
         }
 

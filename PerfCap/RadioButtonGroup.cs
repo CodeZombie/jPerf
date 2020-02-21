@@ -11,7 +11,7 @@ namespace PerfCap
 
         List<ToolStripRadioButton> RadioButtons;
         private int Selected;
-
+                     
         public RadioButtonGroup(List<ToolStripRadioButton> RadioButtons)
         {
             this.Selected = 0;

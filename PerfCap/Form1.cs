@@ -69,19 +69,11 @@ namespace jPerf
             });
 
             //Create radio/checkbox buttons:
-            showMarkersToolStripMenuItem.SetTicked(true);
-
-            showMarkersToolStripMenuItem.OnTicked(() =>
-            {
-                Profiler.SetShowMarkers(showMarkersToolStripMenuItem.Ticked);
+            showMarkersToolStripMenuItem.Checked = true;
+            showMarkersToolStripMenuItem.CheckedChanged += (sender, e) => {
+                Profiler.SetShowMarkers(showMarkersToolStripMenuItem.Checked);
                 Redraw();
-            });
-
-            showMarkersToolStripMenuItem.OnUnticked(() =>
-            {
-                Profiler.SetShowMarkers(showMarkersToolStripMenuItem.Ticked);
-                Redraw();
-            });
+            };
 
             ///None
             noneToolStripMenuItem.SetOnTicked(() =>
@@ -132,8 +124,13 @@ namespace jPerf
                 PerformanceCounter cpuCounter = new PerformanceCounter("Processor", "% Idle Time", "_Total");
                 cpuCounter.NextValue();
 
-                Profiler.AddTracker(new Tracker("GPU Load", System.Drawing.Color.FromArgb(255, 244, 67, 54), () => { GpuLoad.Hardware.Update(); return (double)GpuLoad.Value; }));
-                Profiler.AddTracker(new Tracker("CPU Load", System.Drawing.Color.FromArgb(255, 33, 150, 243), () => { return 100.0 - (double)cpuCounter.NextValue(); }));
+                //Ram counter
+                PerformanceCounter ramCounter = new PerformanceCounter("Memory", "% Committed Bytes In Use");
+                ramCounter.NextValue();
+
+                Profiler.AddTracker(new Tracker("GPU Load %", System.Drawing.Color.FromArgb(255, 244, 67, 54), () => { GpuLoad.Hardware.Update(); return (double)GpuLoad.Value; }));
+                Profiler.AddTracker(new Tracker("CPU Load %", System.Drawing.Color.FromArgb(255, 33, 150, 243), () => { return 100.0 - (double)cpuCounter.NextValue(); }));
+                Profiler.AddTracker(new Tracker("RAM Use %", System.Drawing.Color.FromArgb(255, 54, 250, 33), () => { return (double)ramCounter.NextValue(); }));
 
                 addFlagButton.Enabled = false;
                 jPXLogFileToolStripMenuItem.Enabled = false;
@@ -141,13 +138,14 @@ namespace jPerf
                 stopRecordingToolStripMenuItem.Enabled = false;
                 smoothModeToolStripMenuItem.Enabled = false;
                 SmoothRadioButtonGroup.SetEnabled(false);
-                Profiler.SetShowMarkers(showMarkersToolStripMenuItem.Ticked);
+                Profiler.SetShowMarkers(showMarkersToolStripMenuItem.Checked);
                 Profiler.SetSmoothMode(SmoothRadioButtonGroup.GetSelected());
                 showMarkersToolStripMenuItem.Enabled = false;
                 this.Text = "jPerf (Ready)";
-                label1.Clear();
-                label1.UpdateText("base", "Ready.");
-                label1.Show();
+                statusText.Text = "Ready";
+                statusIcon.Text = "✅";
+                statusIcon.ForeColor = System.Drawing.Color.Green;
+                pictureBox1.Show();
                 plotView1.Hide();
             }));
 
@@ -160,8 +158,11 @@ namespace jPerf
                 startRecordingToolStripMenuItem.Enabled = false;
                 stopRecordingToolStripMenuItem.Enabled = true;
                 this.Text = "jPerf (Recording...) - *";
-                label1.UpdateText("base", "Recording...");
-                label1.UpdateText("StartTime", "Started: " + Profiler.GetStartTime().ToLongTimeString());
+                statusText.Text = "Recording...";
+                statusIcon.Text = "⚫";
+                statusIcon.ForeColor = System.Drawing.Color.Red;
+                //label1.UpdateText("StartTime", "Started: " + Profiler.GetStartTime().ToLongTimeString());
+
                 UpdateStopWatch.Start();
             }));
 
@@ -178,10 +179,13 @@ namespace jPerf
                 SmoothRadioButtonGroup.SetEnabled(true);
 
                 this.Text = "jPerf (Stopped) - *";
-                label1.Hide();
+                statusText.Text = "Stopped";
+                statusIcon.Text = "⬛";
+                statusIcon.ForeColor = System.Drawing.Color.Black;
+                pictureBox1.Hide();
                 plotView1.Show();
                 plotView1.Model.Axes[0].Zoom(0, Math.Floor(Profiler.GetElapsedTime()/1000));
-                Profiler.SetShowMarkers(showMarkersToolStripMenuItem.Ticked);
+                Profiler.SetShowMarkers(showMarkersToolStripMenuItem.Checked);
                 Profiler.SetSmoothMode(SmoothRadioButtonGroup.GetSelected());
                 Redraw();
                 Console.WriteLine("SELECTED SMOOTH MODE: " + SmoothRadioButtonGroup.GetSelected().ToString());
@@ -261,8 +265,8 @@ namespace jPerf
             {
                 Profiler.Update();
                 LastProfilerUpdateTime = CurrentTime;
-                label1.UpdateText("SampleCount", Profiler.GetNumberOfSamples().ToString() + " samples");
-                label1.UpdateText("TimeCount", Profiler.GetElapsedTime() + " ms");
+                //label1.UpdateText("SampleCount", Profiler.GetNumberOfSamples().ToString() + " samples");
+                //label1.UpdateText("TimeCount", Profiler.GetElapsedTime() + " ms");
             }
         }
 
@@ -286,6 +290,7 @@ namespace jPerf
 
             if (openFileDialog1.FileName != "")
             {
+                statusText.Text = "Loading...";
                 string TextData;
                 FileStream Stream = new FileStream(openFileDialog1.FileName, FileMode.Open, FileAccess.Read);
                 using (StreamReader Reader = new StreamReader(Stream, Encoding.UTF8))
@@ -347,7 +352,7 @@ namespace jPerf
                 Width = 304,
                 Height = 132,
                 FormBorderStyle = FormBorderStyle.FixedDialog,
-                Text = "New Marker...",
+                Text = "New Marker at " + Time.ToString() + "ms",
                 StartPosition = FormStartPosition.CenterParent
             };
 
@@ -377,7 +382,7 @@ namespace jPerf
 
             if (Prompt.ShowDialog() == DialogResult.OK)
             {
-                this.Profiler.AddMarker(TextBox.Text);
+                this.Profiler.AddMarker(Time, TextBox.Text);
             }
         }
 
@@ -400,6 +405,12 @@ namespace jPerf
                 this.Profiler.AddMarkerFile(TextData);
             }
             Redraw();
+        }
+
+        private void aboutToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            AboutForm AboutForm = new AboutForm();
+            AboutForm.ShowDialog();
         }
     }
 }
