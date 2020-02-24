@@ -6,10 +6,10 @@ using System.Threading.Tasks;
 
 namespace jPerf
 {
-    class Sample
+    public class Sample
     {
-        private double Value;
-        private double Time;
+        public double Value { get; }
+        public double Time { get; }
 
         public static List<Sample> FromDynamicList(List<dynamic> ObjectList)
         {
@@ -23,19 +23,8 @@ namespace jPerf
 
         public Sample(double Value, double Time)
         {
-            Console.WriteLine("Created Sample: " + Value.ToString() + " | Time: " + Time.ToString());
             this.Value = Value;
             this.Time = Time;
-        }
-
-        public double GetValue()
-        {
-            return this.Value;
-        }
-
-        public double GetTime()
-        {
-            return this.Time;
         }
 
         public object ToObject()

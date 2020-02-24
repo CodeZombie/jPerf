@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace PerfCap
 {
-    class Marker
+    public class Marker
     {
         public string Name { get; }
         public double Time { get; }
@@ -27,5 +27,3 @@ namespace PerfCap
         }
     }
 }
-
-//جرمی
