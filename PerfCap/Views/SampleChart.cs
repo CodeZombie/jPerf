@@ -22,7 +22,6 @@ namespace PerfCap.Controller
     //This class will abstract away much of the complexities of working with Oxyplot.
     public class SampleChart
     {
-
         private PlotView plotView;
 
         public SampleChart (PlotView plotView)
@@ -53,11 +52,15 @@ namespace PerfCap.Controller
             });
         }
 
+        public static int TimeUnitDivisor(TimeUnit timeUnit)
+        {
+            return timeUnit == TimeUnit.Milliseconds ? 1 : (timeUnit == TimeUnit.Seconds ? 1000 : 60000);
+        }
+
         public void Draw(Profiler profiler, bool showMarkers, SmoothMode smoothMode, TimeUnit timeUnit)
         {
             //Clear and re-add all series:
             this.plotView.Model.Series.Clear();
-
             foreach (Tracker tracker in profiler.Trackers)
             {
                 this.plotView.Model.Series.Add(new LineSeries()
@@ -94,7 +97,7 @@ namespace PerfCap.Controller
                     runningTime += tracker.Samples[i].Time;
                     if (i % mergeSize == (mergeSize - 1) || i == (tracker.Samples.Count() - 1))
                     {
-                        lineSeries.Points.Add(new DataPoint((runningTime / mergeSize) / (timeUnit == TimeUnit.Milliseconds ? 1 : (timeUnit == TimeUnit.Seconds ? 1000 : 60000)), runningValue / mergeSize));
+                        lineSeries.Points.Add(new DataPoint( (runningTime / (( i % mergeSize) + 1)) / TimeUnitDivisor(timeUnit), runningValue / ((i % mergeSize) + 1)));
                     }
                 }
             }
@@ -115,12 +118,19 @@ namespace PerfCap.Controller
                         FontSize = 10,
                         Text = marker.Name + " (" + Math.Round(marker.Time / 1000, 2).ToString() + " s)",
                         TextColor = OxyColors.Black,
-                        X = marker.Time / 1000
+                        X = marker.Time / TimeUnitDivisor(timeUnit)
                     });
                 }
 
             }
 
+            this.plotView.Model.InvalidatePlot(true);
+            ((IPlotModel)this.plotView.Model).Update(true);
+        }
+
+        public void Zoom(int start, int end)
+        {
+            plotView.Model.Axes[0].Zoom(start, end);
             this.plotView.Model.InvalidatePlot(true);
             ((IPlotModel)this.plotView.Model).Update(true);
         }

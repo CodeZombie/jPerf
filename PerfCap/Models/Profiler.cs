@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Diagnostics;
 using System.Windows.Forms;
+using Newtonsoft.Json;
 
 namespace PerfCap.Model
 {
@@ -51,6 +52,10 @@ namespace PerfCap.Model
             updateTimer.Tick += UpdateLoop;
             updateTimer.Enabled = true;
         }
+        public int GetRecordingLength()
+        {
+            return (int)Math.Floor(Trackers[0].Samples.Last().Time);
+        }
 
         public int GetSampleCount()
         {
@@ -68,7 +73,6 @@ namespace PerfCap.Model
             double elapsedTime = this.Stopwatch.Elapsed.TotalMilliseconds;
             if (this.State == ProfilerState.Recording && elapsedTime - lastSampleCaptureTime > CaptureInterval)
             {
-                this.log.AddLine("Capturing Samples");
                 foreach (Tracker tracker in Trackers)
                 {
                     tracker.CaptureSample(this.Stopwatch.Elapsed.TotalMilliseconds);
@@ -104,5 +108,52 @@ namespace PerfCap.Model
             this.State = ProfilerState.Stopped;
             this.Stopwatch.Stop();
         }
+
+        public void AddMarkerFile(string JsonString, Log log)
+        {
+            log.AddLine("Parsing jPerf Marker File");
+            dynamic data = JsonConvert.DeserializeObject<dynamic>(JsonString);
+
+            foreach (dynamic marker in data)
+            {
+                DateTime time = DateTime.ParseExact((string)marker.time, "yyyy-MM-dd HH:mm:ss", new System.Globalization.CultureInfo("en-US"));
+                this.Markers.Add(new Marker( (string)marker.title, time.Subtract(this.StartTime).TotalMilliseconds, log));
+            }
+        }
+
+        public static Profiler FromJson(string JsonString, Log log)
+        {
+            log.AddLine("Parsing jPerf Capture File");
+            Profiler newProfiler = new Profiler(ProfilerState.Stopped, log);
+
+            dynamic data = JsonConvert.DeserializeObject<dynamic>(JsonString);
+
+            newProfiler.StartTime = data.StartTime;
+
+            //Add Markers
+            foreach (dynamic m in data.Markers)
+            {
+                newProfiler.Markers.Add(new Marker((string)m.Name, (double)m.Time, log));
+            }
+
+            //create profilers:
+            foreach (dynamic o in data.Trackers)
+            {
+                string profilerName = o.Name;
+                List<Sample> Samples = Sample.FromDynamicList(o.Samples.ToObject<List<object>>(), log);
+                int Color_A = o.Color_A;
+                int Color_R = o.Color_R;
+                int Color_G = o.Color_G;
+                int Color_B = o.Color_B;
+                System.Drawing.Color Color = System.Drawing.Color.FromArgb(Color_A, Color_R, Color_G, Color_B);
+
+                Tracker tracker = new Tracker(profilerName, Color, () => { return 0.0; }, log);
+                tracker.Samples.AddRange(Samples);
+                newProfiler.Trackers.Add(tracker);
+            }
+            return newProfiler;
+        }
+
+
     }
 }

@@ -26,7 +26,7 @@ namespace jPerf
         public Sample(double value, double time)
         {
             this.Value = value;
-            this.Time = time;
+            this.Time = Math.Floor(time);
         }
 
         public object ToObject()

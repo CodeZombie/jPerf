@@ -66,8 +66,12 @@ namespace jPerf
             markersToolStripMenuItem.Enabled                                                = this.profiler.State == ProfilerState.Stopped;
             saveToolStripMenuItem.Enabled                                                   = this.profiler.State != ProfilerState.Ready;
             showMarkersToolStripMenuItem.Enabled = this.smoothModeToolStripMenuItem.Enabled = this.profiler.State == ProfilerState.Stopped;
+            jPMImportToolStripMenuItem.Enabled                                              = this.profiler.State == ProfilerState.Stopped;
+
             sampleCountStatusLabel.Text = "Samples: " + (profiler.State != ProfilerState.Ready ? profiler.GetSampleCount().ToString() : "0");
             markerCountStatusLabel.Text = "Markers: " + (profiler.State != ProfilerState.Ready ? profiler.Markers.Count().ToString() : "0");
+
+            timeUnitStatus.Text = "Time Units: " + (timeUnit == TimeUnit.Milliseconds ? "Milliseconds" : timeUnit == TimeUnit.Seconds ? "Seconds" : "Minutes");
 
             (profiler.State == ProfilerState.Stopped ? (Action)plotView1.Show : plotView1.Hide)();
             (profiler.State == ProfilerState.Stopped ? (Action)pictureBox1.Hide : pictureBox1.Show)();
@@ -145,6 +149,7 @@ namespace jPerf
         {
             this.profiler.StopRecording();
             UpdateView(true);
+            sampleChart.Zoom(0, (int)Math.Floor(this.profiler.Stopwatch.Elapsed.TotalMilliseconds / SampleChart.TimeUnitDivisor(timeUnit)));
         }
 
         private void exitToolStripMenuItem_Click(object sender, EventArgs e)
@@ -162,18 +167,68 @@ namespace jPerf
         {
             timeUnit = TimeUnit.Milliseconds;
             UpdateView(true);
+            sampleChart.Zoom(0, profiler.GetRecordingLength() / SampleChart.TimeUnitDivisor(timeUnit));
         }
 
         private void secondsToolStripMenuItem_Click(object sender, EventArgs e)
         {
             timeUnit = TimeUnit.Seconds;
             UpdateView(true);
+            sampleChart.Zoom(0, profiler.GetRecordingLength() / SampleChart.TimeUnitDivisor(timeUnit));
         }
 
         private void minutesToolStripMenuItem_Click(object sender, EventArgs e)
         {
             timeUnit = TimeUnit.Minutes;
             UpdateView(true);
+            sampleChart.Zoom(0, profiler.GetRecordingLength() / SampleChart.TimeUnitDivisor(timeUnit));
+        }
+
+        private void resetViewToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            sampleChart.Zoom(0, profiler.GetRecordingLength() / SampleChart.TimeUnitDivisor(timeUnit));
+        }
+
+        private void jPMImportToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            OpenFileDialog openFileDialog = new OpenFileDialog();
+            openFileDialog.Filter = "jPerf Marker File|*.jpm|JSON File|*.json";
+            openFileDialog.Title = "Open Marker file";
+            openFileDialog.ShowDialog();
+
+            if (openFileDialog.FileName != "")
+            {
+                string TextData;
+                FileStream Stream = new FileStream(openFileDialog.FileName, FileMode.Open, FileAccess.Read);
+                using (StreamReader Reader = new StreamReader(Stream, Encoding.UTF8))
+                {
+                    TextData = Reader.ReadToEnd();
+                }
+                this.profiler.AddMarkerFile(TextData, log);
+                UpdateView(true);
+            }
+        }
+
+        private void openToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            OpenFileDialog openFileDialog = new OpenFileDialog();
+            openFileDialog.Filter = "jPerf Capture|*.jpc|JSON File|*.json";
+            openFileDialog.Title = "Open a capture file";
+            openFileDialog.ShowDialog();
+
+            if (openFileDialog.FileName != "")
+            {
+                string textData;
+                FileStream stream = new FileStream(openFileDialog.FileName, FileMode.Open, FileAccess.Read);
+                using (StreamReader reader = new StreamReader(stream, Encoding.UTF8))
+                {
+                    textData = reader.ReadToEnd();
+                }
+
+                this.profiler = Profiler.FromJson(textData, log);
+                UpdateView(true);
+                sampleChart.Zoom(0, profiler.GetRecordingLength() / SampleChart.TimeUnitDivisor(timeUnit));
+            }
         }
     }
 }

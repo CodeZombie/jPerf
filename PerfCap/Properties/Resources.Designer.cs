@@ -63,6 +63,16 @@ namespace PerfCap.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap background_transparent {
+            get {
+                object obj = ResourceManager.GetObject("background_transparent", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap FlagIcon_red {
             get {
                 object obj = ResourceManager.GetObject("FlagIcon_red", resourceCulture);
