@@ -26,28 +26,30 @@ namespace PerfCap.Model
     public class Profiler
     {
         public List<Tracker> Trackers;
-        public List<Tracker> SmoothTrackers { get; set; }
         public List<Marker> Markers { get; set; }
-        public bool ShowMarkers { get; set; }
-        public Stopwatch Stopwatch { get; set; }
-        public double lastSampleCaptureTime {get; set;}
-        public DateTime StartTime { get; set; }
-        public ProfilerState State { get; set; }
-        public int CaptureInterval { get; set; } //How many milliseconds in between sample captures
+        public Stopwatch Stopwatch { get; set; }            //Keeps track of how many milliseconds have passed while recording
+        private double lastSampleCaptureTime;
+        public DateTime StartTime { get; set; }             //The exact moment the profiler began recording
+        private Timer updateTimer;                          //Triggers the UpdateLoop() function at a regular interval
+        public int CaptureInterval { get; set; }            //Roughly how many milliseconds between each capture.
+        public ProfilerState State { get; set; }            //Ready, Recording, Stopped.
+        private Log log;
 
-        public SmoothMode SmoothMode;
-
-        public Profiler(ProfilerState profilerState)
+        public Profiler(ProfilerState profilerState, Log log)
         {
+            this.log = log;
+            this.log.AddLine("New Profiler Created");
             Trackers = new List<Tracker>();
-            SmoothTrackers = new List<Tracker>();
             Markers = new List<Marker>();
             Stopwatch = new Stopwatch();
-            ShowMarkers = true;
-            SetSmoothMode(SmoothMode.None);
             State = profilerState;
             Stopwatch.Reset();
             CaptureInterval = 500;
+
+            updateTimer = new Timer();
+            updateTimer.Interval = 10;
+            updateTimer.Tick += UpdateLoop;
+            updateTimer.Enabled = true;
         }
 
         public int GetSampleCount()
@@ -60,37 +62,16 @@ namespace PerfCap.Model
             return count;
         }
 
-        public List<Tracker> GetTrackers()
+        public void UpdateLoop(object s, EventArgs e)
         {
-            if(this.SmoothMode == SmoothMode.None)
-            {
-                return this.Trackers;
-            }
-            else
-            {
-                return this.SmoothTrackers;
-            }
-        }
-
-        public void SetSmoothMode(SmoothMode smoothMode)
-        {
-            this.SmoothMode = smoothMode;
-
-            SmoothTrackers.Clear();
-            foreach(Tracker tracker in Trackers)
-            {
-                SmoothTrackers.Add(tracker.Smooth(this.SmoothMode));
-            }
-        }
-
-        public void CaptureSamples()
-        {
+            
             double elapsedTime = this.Stopwatch.Elapsed.TotalMilliseconds;
             if (this.State == ProfilerState.Recording && elapsedTime - lastSampleCaptureTime > CaptureInterval)
             {
+                this.log.AddLine("Capturing Samples");
                 foreach (Tracker tracker in Trackers)
                 {
-                    tracker.CaptureSample(this.Stopwatch.Elapsed.Milliseconds);
+                    tracker.CaptureSample(this.Stopwatch.Elapsed.TotalMilliseconds);
                 }
                 this.lastSampleCaptureTime = elapsedTime;
             }
@@ -98,22 +79,25 @@ namespace PerfCap.Model
 
         public void StartRecording()
         {
-            if(this.State != ProfilerState.Ready)
+            this.log.AddLine("Started Recording...");
+            if (this.State != ProfilerState.Ready)
             {
-                Console.WriteLine("MESSAGE: Cannot start recording - Profiler not ready.");
+                this.log.AddLine("WARNING: Cannot start recording - Profiler not ready");
                 return;
             }
 
             this.State = ProfilerState.Recording;
             this.Stopwatch.Start();
             this.StartTime = DateTime.Now;
+            this.updateTimer.Start();
         }
 
         public void StopRecording()
         {
-            if(this.State != ProfilerState.Recording)
+            this.log.AddLine("Stopping Recording...");
+            if (this.State != ProfilerState.Recording)
             {
-                Console.WriteLine("MESSAGE: Cannot stop recording - Recording not started.");
+                this.log.AddLine("WARNING: Cannot stop recording - Recording not started.");
                 return;
             }
 

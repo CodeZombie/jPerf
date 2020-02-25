@@ -43,6 +43,7 @@ namespace jPerf
             this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripDropDownButton4 = new System.Windows.Forms.ToolStripDropDownButton();
             this.helpFileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.openLogToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
             this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripDropDownButton5 = new System.Windows.Forms.ToolStripDropDownButton();
@@ -59,6 +60,8 @@ namespace jPerf
             this.toolStripDropDownButton2 = new System.Windows.Forms.ToolStripDropDownButton();
             this.startRecordingToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.stopRecordingToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.startRecordingTooltipButton = new System.Windows.Forms.ToolStripButton();
+            this.stopRecordingTooltipButton = new System.Windows.Forms.ToolStripButton();
             this.AddMarkerButton = new System.Windows.Forms.ToolStripButton();
             this.plotView1 = new OxyPlot.WindowsForms.PlotView();
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
@@ -67,6 +70,10 @@ namespace jPerf
             this.sampleCountStatusLabel = new System.Windows.Forms.ToolStripStatusLabel();
             this.markerCountStatusLabel = new System.Windows.Forms.ToolStripStatusLabel();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
+            this.timeUnitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.millisecondsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.secondsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.minutesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStrip1.SuspendLayout();
             this.statusStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
@@ -81,6 +88,8 @@ namespace jPerf
             this.toolStripDropDownButton5,
             this.toolStripDropDownButton3,
             this.toolStripDropDownButton2,
+            this.startRecordingTooltipButton,
+            this.stopRecordingTooltipButton,
             this.AddMarkerButton});
             this.toolStrip1.Location = new System.Drawing.Point(0, 0);
             this.toolStrip1.Name = "toolStrip1";
@@ -157,6 +166,7 @@ namespace jPerf
             this.toolStripDropDownButton4.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
             this.toolStripDropDownButton4.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.helpFileToolStripMenuItem,
+            this.openLogToolStripMenuItem,
             this.toolStripSeparator2,
             this.aboutToolStripMenuItem});
             this.toolStripDropDownButton4.Image = ((System.Drawing.Image)(resources.GetObject("toolStripDropDownButton4.Image")));
@@ -168,18 +178,25 @@ namespace jPerf
             // helpFileToolStripMenuItem
             // 
             this.helpFileToolStripMenuItem.Name = "helpFileToolStripMenuItem";
-            this.helpFileToolStripMenuItem.Size = new System.Drawing.Size(120, 22);
+            this.helpFileToolStripMenuItem.Size = new System.Drawing.Size(126, 22);
             this.helpFileToolStripMenuItem.Text = "Help File";
+            // 
+            // openLogToolStripMenuItem
+            // 
+            this.openLogToolStripMenuItem.Name = "openLogToolStripMenuItem";
+            this.openLogToolStripMenuItem.Size = new System.Drawing.Size(126, 22);
+            this.openLogToolStripMenuItem.Text = "Open Log";
+            this.openLogToolStripMenuItem.Click += new System.EventHandler(this.openLogToolStripMenuItem_Click);
             // 
             // toolStripSeparator2
             // 
             this.toolStripSeparator2.Name = "toolStripSeparator2";
-            this.toolStripSeparator2.Size = new System.Drawing.Size(117, 6);
+            this.toolStripSeparator2.Size = new System.Drawing.Size(123, 6);
             // 
             // aboutToolStripMenuItem
             // 
             this.aboutToolStripMenuItem.Name = "aboutToolStripMenuItem";
-            this.aboutToolStripMenuItem.Size = new System.Drawing.Size(120, 22);
+            this.aboutToolStripMenuItem.Size = new System.Drawing.Size(126, 22);
             this.aboutToolStripMenuItem.Text = "About";
             // 
             // toolStripDropDownButton5
@@ -217,7 +234,7 @@ namespace jPerf
             // 
             // addMarkerToolStripMenuItem
             // 
-            this.addMarkerToolStripMenuItem.Image = global::PerfCap.Properties.Resources.FlagIcon_red;
+            this.addMarkerToolStripMenuItem.Image = ((System.Drawing.Image)(resources.GetObject("addMarkerToolStripMenuItem.Image")));
             this.addMarkerToolStripMenuItem.Name = "addMarkerToolStripMenuItem";
             this.addMarkerToolStripMenuItem.Size = new System.Drawing.Size(136, 22);
             this.addMarkerToolStripMenuItem.Text = "Add Marker";
@@ -228,7 +245,8 @@ namespace jPerf
             this.toolStripDropDownButton3.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
             this.toolStripDropDownButton3.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.showMarkersToolStripMenuItem,
-            this.smoothModeToolStripMenuItem});
+            this.smoothModeToolStripMenuItem,
+            this.timeUnitToolStripMenuItem});
             this.toolStripDropDownButton3.Image = ((System.Drawing.Image)(resources.GetObject("toolStripDropDownButton3.Image")));
             this.toolStripDropDownButton3.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.toolStripDropDownButton3.Name = "toolStripDropDownButton3";
@@ -238,6 +256,7 @@ namespace jPerf
             // showMarkersToolStripMenuItem
             // 
             this.showMarkersToolStripMenuItem.Checked = true;
+            this.showMarkersToolStripMenuItem.CheckOnClick = true;
             this.showMarkersToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
             this.showMarkersToolStripMenuItem.Name = "showMarkersToolStripMenuItem";
             this.showMarkersToolStripMenuItem.Size = new System.Drawing.Size(150, 22);
@@ -289,6 +308,7 @@ namespace jPerf
             // 
             // startRecordingToolStripMenuItem
             // 
+            this.startRecordingToolStripMenuItem.Image = global::PerfCap.Properties.Resources.FlagIcon2_red;
             this.startRecordingToolStripMenuItem.Name = "startRecordingToolStripMenuItem";
             this.startRecordingToolStripMenuItem.Size = new System.Drawing.Size(155, 22);
             this.startRecordingToolStripMenuItem.Text = "Start Recording";
@@ -297,16 +317,38 @@ namespace jPerf
             // stopRecordingToolStripMenuItem
             // 
             this.stopRecordingToolStripMenuItem.Enabled = false;
+            this.stopRecordingToolStripMenuItem.Image = global::PerfCap.Properties.Resources.Stop_Icon;
             this.stopRecordingToolStripMenuItem.Name = "stopRecordingToolStripMenuItem";
             this.stopRecordingToolStripMenuItem.Size = new System.Drawing.Size(155, 22);
             this.stopRecordingToolStripMenuItem.Text = "Stop Recording";
             this.stopRecordingToolStripMenuItem.Click += new System.EventHandler(this.stopRecordingToolStripMenuItem_Click);
             // 
+            // startRecordingTooltipButton
+            // 
+            this.startRecordingTooltipButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.startRecordingTooltipButton.Image = global::PerfCap.Properties.Resources.FlagIcon2_red;
+            this.startRecordingTooltipButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.startRecordingTooltipButton.Margin = new System.Windows.Forms.Padding(16, 1, 0, 2);
+            this.startRecordingTooltipButton.Name = "startRecordingTooltipButton";
+            this.startRecordingTooltipButton.Size = new System.Drawing.Size(23, 22);
+            this.startRecordingTooltipButton.Text = "toolStripButton1";
+            this.startRecordingTooltipButton.Click += new System.EventHandler(this.startRecordingToolStripMenuItem_Click);
+            // 
+            // stopRecordingTooltipButton
+            // 
+            this.stopRecordingTooltipButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.stopRecordingTooltipButton.Image = global::PerfCap.Properties.Resources.Stop_Icon;
+            this.stopRecordingTooltipButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.stopRecordingTooltipButton.Name = "stopRecordingTooltipButton";
+            this.stopRecordingTooltipButton.Size = new System.Drawing.Size(23, 22);
+            this.stopRecordingTooltipButton.Text = "toolStripButton2";
+            this.stopRecordingTooltipButton.Click += new System.EventHandler(this.stopRecordingToolStripMenuItem_Click);
+            // 
             // AddMarkerButton
             // 
             this.AddMarkerButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
             this.AddMarkerButton.Enabled = false;
-            this.AddMarkerButton.Image = global::PerfCap.Properties.Resources.FlagIcon_red;
+            this.AddMarkerButton.Image = ((System.Drawing.Image)(resources.GetObject("AddMarkerButton.Image")));
             this.AddMarkerButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.AddMarkerButton.Name = "AddMarkerButton";
             this.AddMarkerButton.Size = new System.Drawing.Size(23, 22);
@@ -370,7 +412,6 @@ namespace jPerf
             // pictureBox1
             // 
             this.pictureBox1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.pictureBox1.Image = global::PerfCap.Properties.Resources.background_transparent;
             this.pictureBox1.InitialImage = ((System.Drawing.Image)(resources.GetObject("pictureBox1.InitialImage")));
             this.pictureBox1.Location = new System.Drawing.Point(0, 25);
             this.pictureBox1.Name = "pictureBox1";
@@ -378,6 +419,37 @@ namespace jPerf
             this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.CenterImage;
             this.pictureBox1.TabIndex = 7;
             this.pictureBox1.TabStop = false;
+            // 
+            // timeUnitToolStripMenuItem
+            // 
+            this.timeUnitToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.millisecondsToolStripMenuItem,
+            this.secondsToolStripMenuItem,
+            this.minutesToolStripMenuItem});
+            this.timeUnitToolStripMenuItem.Name = "timeUnitToolStripMenuItem";
+            this.timeUnitToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.timeUnitToolStripMenuItem.Text = "Time Unit";
+            // 
+            // millisecondsToolStripMenuItem
+            // 
+            this.millisecondsToolStripMenuItem.Name = "millisecondsToolStripMenuItem";
+            this.millisecondsToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.millisecondsToolStripMenuItem.Text = "Milliseconds";
+            this.millisecondsToolStripMenuItem.Click += new System.EventHandler(this.millisecondsToolStripMenuItem_Click);
+            // 
+            // secondsToolStripMenuItem
+            // 
+            this.secondsToolStripMenuItem.Name = "secondsToolStripMenuItem";
+            this.secondsToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.secondsToolStripMenuItem.Text = "Seconds";
+            this.secondsToolStripMenuItem.Click += new System.EventHandler(this.secondsToolStripMenuItem_Click);
+            // 
+            // minutesToolStripMenuItem
+            // 
+            this.minutesToolStripMenuItem.Name = "minutesToolStripMenuItem";
+            this.minutesToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.minutesToolStripMenuItem.Text = "Minutes";
+            this.minutesToolStripMenuItem.Click += new System.EventHandler(this.minutesToolStripMenuItem_Click);
             // 
             // MainWindow
             // 
@@ -436,6 +508,13 @@ namespace jPerf
         public ToolStripMenuItem newToolStripMenuItem;
         private ToolStripStatusLabel sampleCountStatusLabel;
         private ToolStripStatusLabel markerCountStatusLabel;
+        private ToolStripMenuItem openLogToolStripMenuItem;
+        private ToolStripButton startRecordingTooltipButton;
+        private ToolStripButton stopRecordingTooltipButton;
+        private ToolStripMenuItem timeUnitToolStripMenuItem;
+        private ToolStripMenuItem millisecondsToolStripMenuItem;
+        private ToolStripMenuItem secondsToolStripMenuItem;
+        private ToolStripMenuItem minutesToolStripMenuItem;
     }
 }
 

@@ -19,7 +19,7 @@ namespace PerfCap.Model
 
         public override double GetNextValue()
         {
-            return (double)counter.NextValue();
+            return 100.0 - (double)counter.NextValue();
         }
     }
 }

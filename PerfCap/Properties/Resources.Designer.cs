@@ -63,36 +63,6 @@ namespace PerfCap.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap background {
-            get {
-                object obj = ResourceManager.GetObject("background", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap background_transparent {
-            get {
-                object obj = ResourceManager.GetObject("background_transparent", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap FlagIcon {
-            get {
-                object obj = ResourceManager.GetObject("FlagIcon", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
         internal static System.Drawing.Bitmap FlagIcon_red {
             get {
                 object obj = ResourceManager.GetObject("FlagIcon_red", resourceCulture);
@@ -103,9 +73,19 @@ namespace PerfCap.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap FlagIcon_red_disabled {
+        internal static System.Drawing.Bitmap FlagIcon2_red {
             get {
-                object obj = ResourceManager.GetObject("FlagIcon_red_disabled", resourceCulture);
+                object obj = ResourceManager.GetObject("FlagIcon2_red", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap Stop_Icon {
+            get {
+                object obj = ResourceManager.GetObject("Stop_Icon", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

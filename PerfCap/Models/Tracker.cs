@@ -15,8 +15,10 @@ namespace jPerf
         public string Name { get; set; }
         public System.Drawing.Color DrawColor { get; }
         
-        public Tracker(string name, System.Drawing.Color drawColor, Func<Double> captureSampleFunction)
+        public Tracker(string name, System.Drawing.Color drawColor, Func<Double> captureSampleFunction, Log log)
         {
+            log.AddLine("Creating Tracker");
+
             this.Name = name;
             this.DrawColor = drawColor;
             this.Samples = new List<Sample>() {};
@@ -28,9 +30,11 @@ namespace jPerf
             this.Samples.Add(new Sample(this.captureSampleFunction(), time));
         }
 
-        public Tracker Smooth(SmoothMode smoothMode)
+        public Tracker Smooth(SmoothMode smoothMode, Log log)
         {
-            Tracker SmoothTracker = new Tracker(this.Name, this.DrawColor, null);
+            log.AddLine("Smoothing Tracker");
+
+            Tracker SmoothTracker = new Tracker(this.Name, this.DrawColor, null, log);
 
             double RunningValue = 0;
             double RunningTime = 0;
@@ -53,8 +57,10 @@ namespace jPerf
 
             return SmoothTracker;
         }
-        public object ToObject()
+        public object ToObject(Log log)
         {
+            log.AddLine("Converting Tracker to JSON object");
+
             List<Object> SampleObjects = new List<object>();
             foreach (Sample S in this.Samples)
             {

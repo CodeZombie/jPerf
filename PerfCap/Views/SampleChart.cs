@@ -13,9 +13,16 @@ using jPerf;
 
 namespace PerfCap.Controller
 {
+    public enum TimeUnit
+    {
+        Milliseconds,
+        Seconds,
+        Minutes
+    };
     //This class will abstract away much of the complexities of working with Oxyplot.
     public class SampleChart
     {
+
         private PlotView plotView;
 
         public SampleChart (PlotView plotView)
@@ -46,7 +53,7 @@ namespace PerfCap.Controller
             });
         }
 
-        public void Draw(Profiler profiler)
+        public void Draw(Profiler profiler, bool showMarkers, SmoothMode smoothMode, TimeUnit timeUnit)
         {
             //Clear and re-add all series:
             this.plotView.Model.Series.Clear();
@@ -65,36 +72,53 @@ namespace PerfCap.Controller
             }
 
             //For every tracker in the profiler...
-            for (var tracker_i = 0; tracker_i < profiler.GetTrackers().Count(); tracker_i++)
+            for (var tracker_i = 0; tracker_i < profiler.Trackers.Count(); tracker_i++)
             {
                 LineSeries lineSeries = (LineSeries)this.plotView.Model.Series[tracker_i];
                 lineSeries.Points.Clear();
                 Tracker tracker = profiler.Trackers[tracker_i];
 
-                ///for every sample in each tracker...
-                foreach (Sample sample in tracker.Samples)
+                double runningValue = 0;
+                double runningTime = 0;
+                int mergeSize = smoothMode == SmoothMode.None ? 1 : smoothMode == SmoothMode.Moderate ? 4 : 8;
+
+                for (int i = 0; i < tracker.Samples.Count(); i++)
                 {
-                    lineSeries.Points.Add(new DataPoint(sample.Time / 1000, sample.Value));
+                    if (i % mergeSize == 0)
+                    {
+                        runningValue = 0;
+                        runningTime = 0;
+                    }
+
+                    runningValue += tracker.Samples[i].Value;
+                    runningTime += tracker.Samples[i].Time;
+                    if (i % mergeSize == (mergeSize - 1) || i == (tracker.Samples.Count() - 1))
+                    {
+                        lineSeries.Points.Add(new DataPoint((runningTime / mergeSize) / (timeUnit == TimeUnit.Milliseconds ? 1 : (timeUnit == TimeUnit.Seconds ? 1000 : 60000)), runningValue / mergeSize));
+                    }
                 }
             }
 
             //Markers...
             this.plotView.Model.Annotations.Clear();
-
-            foreach (Marker marker in profiler.Markers)
+            if (showMarkers)
             {
-                this.plotView.Model.Annotations.Add(new LineAnnotation()
+                foreach (Marker marker in profiler.Markers)
                 {
-                    StrokeThickness = 1,
-                    Color = OxyColors.Green,
-                    Type = LineAnnotationType.Vertical,
-                    Font = "Segoe",
-                    LineStyle = LineStyle.LongDash,
-                    FontSize = 10,
-                    Text = marker.Name + " (" + Math.Round(marker.Time / 1000, 2).ToString() + " s)",
-                    TextColor = OxyColors.Black,
-                    X = marker.Time / 1000
-                });
+                    this.plotView.Model.Annotations.Add(new LineAnnotation()
+                    {
+                        StrokeThickness = 1,
+                        Color = OxyColors.Green,
+                        Type = LineAnnotationType.Vertical,
+                        Font = "Segoe",
+                        LineStyle = LineStyle.LongDash,
+                        FontSize = 10,
+                        Text = marker.Name + " (" + Math.Round(marker.Time / 1000, 2).ToString() + " s)",
+                        TextColor = OxyColors.Black,
+                        X = marker.Time / 1000
+                    });
+                }
+
             }
 
             this.plotView.Model.InvalidatePlot(true);

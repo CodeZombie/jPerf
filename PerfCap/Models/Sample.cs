@@ -1,4 +1,5 @@
-﻿using System;
+﻿using PerfCap.Model;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -11,8 +12,9 @@ namespace jPerf
         public double Value { get; }
         public double Time { get; }
 
-        public static List<Sample> FromDynamicList(List<dynamic> ObjectList)
+        public static List<Sample> FromDynamicList(List<dynamic> ObjectList, Log log)
         {
+            log.AddLine("Creating list of Samples from JSON list");
             List<Sample> SampleList = new List<Sample>();
             foreach(dynamic O in ObjectList)
             {
@@ -21,10 +23,10 @@ namespace jPerf
             return SampleList;
         }
 
-        public Sample(double Value, double Time)
+        public Sample(double value, double time)
         {
-            this.Value = Value;
-            this.Time = Time;
+            this.Value = value;
+            this.Time = time;
         }
 
         public object ToObject()
