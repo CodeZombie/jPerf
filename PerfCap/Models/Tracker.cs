@@ -59,7 +59,7 @@ namespace jPerf
         }
         public object ToObject(Log log)
         {
-            log.AddLine("Converting Tracker to JSON object");
+            log.AddLine("Converting Tracker to generic object");
 
             List<Object> SampleObjects = new List<object>();
             foreach (Sample S in this.Samples)

@@ -35,6 +35,7 @@ namespace PerfCap.Model
         public int CaptureInterval { get; set; }            //Roughly how many milliseconds between each capture.
         public ProfilerState State { get; set; }            //Ready, Recording, Stopped.
         private Log log;
+        public string name { get; set; }
 
         public Profiler(ProfilerState profilerState, Log log)
         {
@@ -51,9 +52,21 @@ namespace PerfCap.Model
             updateTimer.Interval = 10;
             updateTimer.Tick += UpdateLoop;
             updateTimer.Enabled = true;
+            name = "*";
         }
         public int GetRecordingLength()
         {
+            Console.WriteLine(Trackers.Count());
+            if (Trackers.Count() == 0)
+            {
+                return 0;
+            }
+
+            if (Trackers[0].Samples.Count() == 0)
+            {
+                return 0;
+            }
+
             return (int)Math.Floor(Trackers[0].Samples.Last().Time);
         }
 
@@ -98,13 +111,12 @@ namespace PerfCap.Model
 
         public void StopRecording()
         {
-            this.log.AddLine("Stopping Recording...");
             if (this.State != ProfilerState.Recording)
             {
-                this.log.AddLine("WARNING: Cannot stop recording - Recording not started.");
                 return;
             }
 
+            this.log.AddLine("Stopping Recording...");
             this.State = ProfilerState.Stopped;
             this.Stopwatch.Stop();
         }
@@ -154,6 +166,22 @@ namespace PerfCap.Model
             return newProfiler;
         }
 
+        public string ToJson(Log log)
+        {
+            log.AddLine("Converting Profiler object to JSON");
+            List<object> trackerData = new List<object>();
+            foreach (Tracker tracker in Trackers)
+            {
+                trackerData.Add(tracker.ToObject(log));
+            }
+
+            return JsonConvert.SerializeObject(new
+            {
+                this.StartTime,
+                this.Markers,
+                Trackers = trackerData
+            });
+        }
 
     }
 }

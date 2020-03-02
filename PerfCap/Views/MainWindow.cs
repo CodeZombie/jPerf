@@ -85,7 +85,7 @@ namespace jPerf
             this.minutesToolStripMenuItem.Checked = timeUnit == TimeUnit.Minutes;
 
             statusText.Text = ((profiler.State == ProfilerState.Ready) ? "Ready" : (profiler.State == ProfilerState.Recording) ? "Recording" : "Stopped");
-            this.Text = "jPerf - (" + statusText.Text + ")";
+            this.Text = "jPerf - " + profiler.name + " (" + statusText.Text + ")";
             this.statusIcon.Text = (profiler.State == ProfilerState.Ready) ? "✅" : (profiler.State == ProfilerState.Recording) ? "⚫" : "⬛";
             statusIcon.ForeColor = (profiler.State == ProfilerState.Ready) ? System.Drawing.Color.Green : (profiler.State == ProfilerState.Recording) ? System.Drawing.Color.Red : System.Drawing.Color.Black;
 
@@ -136,7 +136,21 @@ namespace jPerf
 
         private void saveToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            log.AddLine("Saving capture");
+            profiler.StopRecording();
 
+            SaveFileDialog saveFileDialog = new SaveFileDialog();
+            saveFileDialog.Filter = "jPerf Capture|*.jpc|JSON File|*.json";
+            saveFileDialog.Title = "Save the capture file";
+            saveFileDialog.AddExtension = true;
+            saveFileDialog.ShowDialog();
+
+            if (saveFileDialog.FileName != "")
+            {
+                File.WriteAllText(saveFileDialog.FileName, profiler.ToJson(log));
+                this.profiler.name =  saveFileDialog.FileName;
+            }
+            UpdateView(false);
         }
 
         private void startRecordingToolStripMenuItem_Click(object sender, EventArgs e)
@@ -226,6 +240,7 @@ namespace jPerf
                 }
 
                 this.profiler = Profiler.FromJson(textData, log);
+                this.profiler.name = openFileDialog.FileName;
                 UpdateView(true);
                 sampleChart.Zoom(0, profiler.GetRecordingLength() / SampleChart.TimeUnitDivisor(timeUnit));
             }
