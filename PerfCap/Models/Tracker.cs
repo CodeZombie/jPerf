@@ -30,6 +30,11 @@ namespace jPerf
             this.Samples.Add(new Sample(this.captureSampleFunction(), time));
         }
 
+        public void AddSample(Sample sample)
+        {
+            this.Samples.Add(sample);
+        }
+
         public Tracker Smooth(SmoothMode smoothMode, Log log)
         {
             log.AddLine("Smoothing Tracker");
@@ -57,6 +62,7 @@ namespace jPerf
 
             return SmoothTracker;
         }
+
         public object ToObject(Log log)
         {
             log.AddLine("Converting Tracker to generic object");

@@ -14,6 +14,7 @@ using PerfCap.Controller;
 using PerfCap.Model;
 using PerfCap.View;
 using PerfCap.Model.HardwareMonitors;
+using PerfCap.Views;
 
 namespace jPerf
 {
@@ -67,6 +68,8 @@ namespace jPerf
             saveToolStripMenuItem.Enabled                                                   = this.profiler.State != ProfilerState.Ready;
             showMarkersToolStripMenuItem.Enabled = this.smoothModeToolStripMenuItem.Enabled = this.profiler.State == ProfilerState.Stopped;
             jPMImportToolStripMenuItem.Enabled                                              = this.profiler.State == ProfilerState.Stopped;
+            mergeJPerfCaptureFileJPCToolStripMenuItem.Enabled                               = this.profiler.State == ProfilerState.Stopped;
+            resetViewToolStripMenuItem.Enabled                                              = this.profiler.State == ProfilerState.Stopped;
 
             sampleCountStatusLabel.Text = "Samples: " + (profiler.State != ProfilerState.Ready ? profiler.GetSampleCount().ToString() : "0");
             markerCountStatusLabel.Text = "Markers: " + (profiler.State != ProfilerState.Ready ? profiler.Markers.Count().ToString() : "0");
@@ -124,7 +127,7 @@ namespace jPerf
             UpdateView(true);
         }
 
-        private void addFlagButton_Click(object sender, EventArgs e)
+        private void addMarkerButton_Click(object sender, EventArgs e)
         {
             double currentTime = profiler.Stopwatch.Elapsed.TotalMilliseconds;
             MarkerPrompt markerPrompt = new MarkerPrompt();
@@ -227,7 +230,7 @@ namespace jPerf
         {
             OpenFileDialog openFileDialog = new OpenFileDialog();
             openFileDialog.Filter = "jPerf Capture|*.jpc|JSON File|*.json";
-            openFileDialog.Title = "Open a capture file";
+            openFileDialog.Title = "Open jPerf Capture File";
             openFileDialog.ShowDialog();
 
             if (openFileDialog.FileName != "")
@@ -243,6 +246,39 @@ namespace jPerf
                 this.profiler.name = openFileDialog.FileName;
                 UpdateView(true);
                 sampleChart.Zoom(0, profiler.GetRecordingLength() / SampleChart.TimeUnitDivisor(timeUnit));
+            }
+        }
+
+        private void aboutToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            AboutForm aboutForm = new AboutForm();
+            aboutForm.Show();
+        }
+
+        private void mergeJPerfCaptureFileJPCToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            OpenFileDialog openFileDialog = new OpenFileDialog();
+            openFileDialog.Filter = "jPerf Capture|*.jpc|JSON File|*.json";
+            openFileDialog.Title = "Open and Merge jPerf Capture File";
+            openFileDialog.ShowDialog();
+
+            if (openFileDialog.FileName != "")
+            {
+                string textData;
+                FileStream stream = new FileStream(openFileDialog.FileName, FileMode.Open, FileAccess.Read);
+                using (StreamReader reader = new StreamReader(stream, Encoding.UTF8))
+                {
+                    textData = reader.ReadToEnd();
+                }
+                Profiler profilerToMerge = Profiler.FromJson(textData, log);
+
+                //Open a window asking for a location (in seconds) in the active Profiler to merge to
+                MergeTimePrompt mergeTimePrompt = new MergeTimePrompt();
+                if (mergeTimePrompt.ShowDialog() == DialogResult.OK)
+                {
+                    this.profiler.MergeWithProfiler(profilerToMerge, decimal.ToDouble(mergeTimePrompt.ReturnValue) * 1000, log);
+                    sampleChart.Draw(profiler, showMarkersToolStripMenuItem.Checked, smoothMode, timeUnit);
+                }
             }
         }
     }

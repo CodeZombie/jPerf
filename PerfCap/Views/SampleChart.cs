@@ -24,6 +24,7 @@ namespace PerfCap.Controller
     {
         private PlotView plotView;
 
+
         public SampleChart (PlotView plotView)
         {
             this.plotView = plotView;

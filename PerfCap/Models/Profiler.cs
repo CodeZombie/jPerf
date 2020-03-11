@@ -129,7 +129,10 @@ namespace PerfCap.Model
             foreach (dynamic marker in data)
             {
                 DateTime time = DateTime.ParseExact((string)marker.time, "yyyy-MM-dd HH:mm:ss", new System.Globalization.CultureInfo("en-US"));
-                this.Markers.Add(new Marker( (string)marker.title, time.Subtract(this.StartTime).TotalMilliseconds, log));
+                if(time >= this.StartTime)
+                {
+                    this.Markers.Add(new Marker((string)marker.title, time.Subtract(this.StartTime).TotalMilliseconds, log));
+                }
             }
         }
 
@@ -183,5 +186,30 @@ namespace PerfCap.Model
             });
         }
 
+        public void MergeWithProfiler(Profiler otherProfiler, double time, Log log)
+        {
+            //Delete all markers after certain time
+            foreach (Tracker tracker in Trackers)
+            {
+                tracker.Samples.RemoveAll(s => s.Time >= time);
+            }
+
+            Markers.RemoveAll(m => m.Time >= time);
+
+            //add every sample from the otherProfiler, but increasing their Time by the defined cutoff point.
+            foreach (Tracker tracker in otherProfiler.Trackers)
+            {
+                Tracker thisTracker = Trackers.Find(t => t.Name == tracker.Name);
+                foreach (Sample sample in tracker.Samples)
+                {
+                    thisTracker.AddSample(new Sample(sample.Value, sample.Time + time));
+                }
+            }
+            //Do the same for markers as well.
+            foreach (Marker marker in otherProfiler.Markers)
+            {
+                this.Markers.Add(new Marker(marker.Name, marker.Time + time, log));
+            }
+        }
     }
 }
