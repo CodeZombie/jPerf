@@ -120,14 +120,14 @@ namespace jPerf
             // newToolStripMenuItem
             // 
             this.newToolStripMenuItem.Name = "newToolStripMenuItem";
-            this.newToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.newToolStripMenuItem.Size = new System.Drawing.Size(110, 22);
             this.newToolStripMenuItem.Text = "New";
             this.newToolStripMenuItem.Click += new System.EventHandler(this.newToolStripMenuItem_Click);
             // 
             // openToolStripMenuItem
             // 
             this.openToolStripMenuItem.Name = "openToolStripMenuItem";
-            this.openToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.openToolStripMenuItem.Size = new System.Drawing.Size(110, 22);
             this.openToolStripMenuItem.Text = "Open";
             this.openToolStripMenuItem.Click += new System.EventHandler(this.openToolStripMenuItem_Click);
             // 
@@ -137,7 +137,7 @@ namespace jPerf
             this.jPMImportToolStripMenuItem,
             this.mergeJPerfCaptureFileJPCToolStripMenuItem});
             this.importToolStripMenuItem.Name = "importToolStripMenuItem";
-            this.importToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.importToolStripMenuItem.Size = new System.Drawing.Size(110, 22);
             this.importToolStripMenuItem.Text = "Import";
             // 
             // jPMImportToolStripMenuItem
@@ -157,19 +157,19 @@ namespace jPerf
             // saveToolStripMenuItem
             // 
             this.saveToolStripMenuItem.Name = "saveToolStripMenuItem";
-            this.saveToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.saveToolStripMenuItem.Size = new System.Drawing.Size(110, 22);
             this.saveToolStripMenuItem.Text = "Save";
             this.saveToolStripMenuItem.Click += new System.EventHandler(this.saveToolStripMenuItem_Click);
             // 
             // toolStripSeparator1
             // 
             this.toolStripSeparator1.Name = "toolStripSeparator1";
-            this.toolStripSeparator1.Size = new System.Drawing.Size(177, 6);
+            this.toolStripSeparator1.Size = new System.Drawing.Size(107, 6);
             // 
             // exitToolStripMenuItem
             // 
             this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
-            this.exitToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.exitToolStripMenuItem.Size = new System.Drawing.Size(110, 22);
             this.exitToolStripMenuItem.Text = "Exit";
             this.exitToolStripMenuItem.Click += new System.EventHandler(this.exitToolStripMenuItem_Click);
             // 
@@ -239,15 +239,16 @@ namespace jPerf
             // 
             this.viewMarkerListToolStripMenuItem.Enabled = false;
             this.viewMarkerListToolStripMenuItem.Name = "viewMarkerListToolStripMenuItem";
-            this.viewMarkerListToolStripMenuItem.Size = new System.Drawing.Size(139, 22);
+            this.viewMarkerListToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.viewMarkerListToolStripMenuItem.Text = "Edit Markers";
             // 
             // clearAllToolStripMenuItem
             // 
             this.clearAllToolStripMenuItem.Enabled = false;
             this.clearAllToolStripMenuItem.Name = "clearAllToolStripMenuItem";
-            this.clearAllToolStripMenuItem.Size = new System.Drawing.Size(139, 22);
+            this.clearAllToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.clearAllToolStripMenuItem.Text = "Clear All";
+            this.clearAllToolStripMenuItem.Click += new System.EventHandler(this.clearAllToolStripMenuItem_Click);
             // 
             // addMarkerToolStripMenuItem
             // 
@@ -288,7 +289,7 @@ namespace jPerf
             this.moderateToolStripMenuItem,
             this.highToolStripMenuItem});
             this.smoothModeToolStripMenuItem.Name = "smoothModeToolStripMenuItem";
-            this.smoothModeToolStripMenuItem.Size = new System.Drawing.Size(150, 22);
+            this.smoothModeToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.smoothModeToolStripMenuItem.Text = "Smooth Mode";
             // 
             // noneToolStripMenuItem
@@ -319,7 +320,7 @@ namespace jPerf
             this.secondsToolStripMenuItem,
             this.minutesToolStripMenuItem});
             this.timeUnitToolStripMenuItem.Name = "timeUnitToolStripMenuItem";
-            this.timeUnitToolStripMenuItem.Size = new System.Drawing.Size(150, 22);
+            this.timeUnitToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.timeUnitToolStripMenuItem.Text = "Time Unit";
             // 
             // millisecondsToolStripMenuItem
@@ -346,7 +347,7 @@ namespace jPerf
             // resetViewToolStripMenuItem
             // 
             this.resetViewToolStripMenuItem.Name = "resetViewToolStripMenuItem";
-            this.resetViewToolStripMenuItem.Size = new System.Drawing.Size(150, 22);
+            this.resetViewToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.resetViewToolStripMenuItem.Text = "Reset View";
             this.resetViewToolStripMenuItem.Click += new System.EventHandler(this.resetViewToolStripMenuItem_Click);
             // 

@@ -70,6 +70,7 @@ namespace jPerf
             jPMImportToolStripMenuItem.Enabled                                              = this.profiler.State == ProfilerState.Stopped;
             mergeJPerfCaptureFileJPCToolStripMenuItem.Enabled                               = this.profiler.State == ProfilerState.Stopped;
             resetViewToolStripMenuItem.Enabled                                              = this.profiler.State == ProfilerState.Stopped;
+            clearAllToolStripMenuItem.Enabled                                               = this.profiler.State == ProfilerState.Stopped;
 
             sampleCountStatusLabel.Text = "Samples: " + (profiler.State != ProfilerState.Ready ? profiler.GetSampleCount().ToString() : "0");
             markerCountStatusLabel.Text = "Markers: " + (profiler.State != ProfilerState.Ready ? profiler.Markers.Count().ToString() : "0");
@@ -279,6 +280,17 @@ namespace jPerf
                     this.profiler.MergeWithProfiler(profilerToMerge, decimal.ToDouble(mergeTimePrompt.ReturnValue) * 1000, log);
                     sampleChart.Draw(profiler, showMarkersToolStripMenuItem.Checked, smoothMode, timeUnit);
                 }
+            }
+        }
+
+        private void clearAllToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            //Deletes all markers from Profiler.
+            DialogResult dialogResult = MessageBox.Show("Are you sure you want to delete all markers from this capture?", "Delete all markers?", MessageBoxButtons.YesNo);
+            if (dialogResult == DialogResult.Yes)
+            {
+                this.profiler.Markers.Clear();
+                sampleChart.Draw(profiler, showMarkersToolStripMenuItem.Checked, smoothMode, timeUnit);
             }
         }
     }
