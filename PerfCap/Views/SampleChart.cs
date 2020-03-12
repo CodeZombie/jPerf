@@ -107,8 +107,11 @@ namespace PerfCap.Controller
             this.plotView.Model.Annotations.Clear();
             if (showMarkers)
             {
+                int i = 90;
                 foreach (Marker marker in profiler.Markers)
                 {
+                    i -= 10;
+                    if( i < 10) { i = 90; }
                     this.plotView.Model.Annotations.Add(new LineAnnotation()
                     {
                         StrokeThickness = 1,
@@ -119,7 +122,9 @@ namespace PerfCap.Controller
                         FontSize = 10,
                         Text = marker.Name + " (" + Math.Round(marker.Time / 1000, 2).ToString() + " s)",
                         TextColor = OxyColors.Black,
-                        X = marker.Time / TimeUnitDivisor(timeUnit)
+                        X = marker.Time / TimeUnitDivisor(timeUnit),
+                        TextPosition = new DataPoint(marker.Time / TimeUnitDivisor(timeUnit), i),
+                        TextHorizontalAlignment = HorizontalAlignment.Left
                     });
                 }
 
