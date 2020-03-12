@@ -40,7 +40,7 @@ namespace PerfCap
             this.panel1.Controls.Add(this.label1);
             this.panel1.Location = new System.Drawing.Point(0, 0);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(384, 72);
+            this.panel1.Size = new System.Drawing.Size(496, 72);
             this.panel1.TabIndex = 0;
             // 
             // label2
@@ -52,7 +52,7 @@ namespace PerfCap
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(69, 13);
             this.label2.TabIndex = 1;
-            this.label2.Text = "Version 0.3.0";
+            this.label2.Text = "Version 0.4.0";
             // 
             // label1
             // 
@@ -68,7 +68,7 @@ namespace PerfCap
             // 
             // button1
             // 
-            this.button1.Location = new System.Drawing.Point(297, 251);
+            this.button1.Location = new System.Drawing.Point(409, 374);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(75, 23);
             this.button1.TabIndex = 1;
@@ -84,20 +84,20 @@ namespace PerfCap
             this.textBox1.Multiline = true;
             this.textBox1.Name = "textBox1";
             this.textBox1.ReadOnly = true;
-            this.textBox1.Size = new System.Drawing.Size(359, 174);
+            this.textBox1.Size = new System.Drawing.Size(471, 273);
             this.textBox1.TabIndex = 2;
             this.textBox1.Text = resources.GetString("textBox1.Text");
             this.textBox1.TextChanged += new System.EventHandler(this.textBox1_TextChanged);
             // 
             // AboutForm
             // 
-            this.ClientSize = new System.Drawing.Size(384, 286);
+            this.ClientSize = new System.Drawing.Size(496, 409);
             this.Controls.Add(this.button1);
             this.Controls.Add(this.panel1);
             this.Controls.Add(this.textBox1);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
             this.MaximizeBox = false;
-            this.MaximumSize = new System.Drawing.Size(400, 325);
+            this.MaximumSize = new System.Drawing.Size(512, 448);
             this.Name = "AboutForm";
             this.SizeGripStyle = System.Windows.Forms.SizeGripStyle.Show;
             this.Text = "jPerf - About";
