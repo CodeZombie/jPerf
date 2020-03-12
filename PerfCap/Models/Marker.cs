@@ -12,11 +12,10 @@ namespace PerfCap
         public string Name { get; }
         public double Time { get; }
 
-        public Marker(String name, Double time, Log log)
+        public Marker(String name, Double time)
         {
             this.Name = name;
             this.Time = time;
-            log.AddLine("Marker '" + name + "' created at: " + time.ToString());
         }
 
         public object ToObject()

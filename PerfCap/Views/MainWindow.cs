@@ -134,7 +134,7 @@ namespace jPerf
             MarkerPrompt markerPrompt = new MarkerPrompt();
             if(markerPrompt.ShowDialog() == DialogResult.OK)
             {
-                profiler.Markers.Add(new Marker(markerPrompt.ReturnValue, currentTime, this.log));
+                profiler.Markers.Add(new Marker(markerPrompt.ReturnValue, currentTime));
             }
         }
 
@@ -216,13 +216,8 @@ namespace jPerf
 
             if (openFileDialog.FileName != "")
             {
-                string TextData;
-                FileStream Stream = new FileStream(openFileDialog.FileName, FileMode.Open, FileAccess.Read);
-                using (StreamReader Reader = new StreamReader(Stream, Encoding.UTF8))
-                {
-                    TextData = Reader.ReadToEnd();
-                }
-                this.profiler.AddMarkerFile(TextData, log);
+                this.profiler.AddMarkers(MarkerBuilder.FromMarkerFile(openFileDialog.FileName, this.profiler.StartTime));
+                //this.profiler.AddMarkerFile(TextData, log);
                 UpdateView(true);
             }
         }
@@ -291,6 +286,21 @@ namespace jPerf
             {
                 this.profiler.Markers.Clear();
                 sampleChart.Draw(profiler, showMarkersToolStripMenuItem.Checked, smoothMode, timeUnit);
+            }
+        }
+
+        private void agisoftMetashapeLogFiletxtToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            //load a metashape log file
+            OpenFileDialog openFileDialog = new OpenFileDialog();
+            openFileDialog.Filter = "Metashape Log File|*.txt|Log File|*.log";
+            openFileDialog.Title = "Open Metashape Log file";
+            openFileDialog.ShowDialog();
+
+            if (openFileDialog.FileName != "")
+            {
+                this.profiler.AddMarkers(MarkerBuilder.FromMetashapeLogFile(openFileDialog.FileName, this.profiler.StartTime, log));
+                UpdateView(true);
             }
         }
     }

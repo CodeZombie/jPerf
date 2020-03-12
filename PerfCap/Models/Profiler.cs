@@ -120,7 +120,7 @@ namespace PerfCap.Model
             this.State = ProfilerState.Stopped;
             this.Stopwatch.Stop();
         }
-
+        /*
         public void AddMarkerFile(string JsonString, Log log)
         {
             log.AddLine("Parsing jPerf Marker File");
@@ -131,9 +131,14 @@ namespace PerfCap.Model
                 DateTime time = DateTime.ParseExact((string)marker.time, "yyyy-MM-dd HH:mm:ss", new System.Globalization.CultureInfo("en-US"));
                 if(time >= this.StartTime)
                 {
-                    this.Markers.Add(new Marker((string)marker.title, time.Subtract(this.StartTime).TotalMilliseconds, log));
+                    this.Markers.Add(new Marker((string)marker.title, time.Subtract(this.StartTime).TotalMilliseconds));
                 }
             }
+        }*/
+
+        public void AddMarkers(List<Marker> markers)
+        {
+            this.Markers.AddRange(markers);
         }
 
         public static Profiler FromJson(string JsonString, Log log)
@@ -144,11 +149,12 @@ namespace PerfCap.Model
             dynamic data = JsonConvert.DeserializeObject<dynamic>(JsonString);
 
             newProfiler.StartTime = data.StartTime;
+            log.AddLine(newProfiler.StartTime.ToShortDateString());
 
             //Add Markers
             foreach (dynamic m in data.Markers)
             {
-                newProfiler.Markers.Add(new Marker((string)m.Name, (double)m.Time, log));
+                newProfiler.Markers.Add(new Marker((string)m.Name, (double)m.Time));
             }
 
             //create profilers:
@@ -208,7 +214,7 @@ namespace PerfCap.Model
             //Do the same for markers as well.
             foreach (Marker marker in otherProfiler.Markers)
             {
-                this.Markers.Add(new Marker(marker.Name, marker.Time + time, log));
+                this.Markers.Add(new Marker(marker.Name, marker.Time + time));
             }
         }
     }
