@@ -15,6 +15,7 @@ using PerfCap.Model;
 using PerfCap.View;
 using PerfCap.Model.HardwareMonitors;
 using PerfCap.Views;
+using jPerf.Views;
 
 namespace jPerf
 {
@@ -71,6 +72,10 @@ namespace jPerf
             mergeJPerfCaptureFileJPCToolStripMenuItem.Enabled                               = this.profiler.State == ProfilerState.Stopped;
             resetViewToolStripMenuItem.Enabled                                              = this.profiler.State == ProfilerState.Stopped;
             clearAllToolStripMenuItem.Enabled                                               = this.profiler.State == ProfilerState.Stopped;
+            agisoftMetashapeLogFiletxtToolStripMenuItem.Enabled                             = this.profiler.State == ProfilerState.Stopped;
+            agisoftDelighterRemoveShadingLogtxtToolStripMenuItem.Enabled                    = this.profiler.State == ProfilerState.Stopped;
+            agisoftDelighterRemoveCastShadowsLogtxtToolStripMenuItem.Enabled                = this.profiler.State == ProfilerState.Stopped;
+            viewMarkerListToolStripMenuItem.Enabled                                         = this.profiler.State == ProfilerState.Stopped;
 
             sampleCountStatusLabel.Text = "Samples: " + (profiler.State != ProfilerState.Ready ? profiler.GetSampleCount().ToString() : "0");
             markerCountStatusLabel.Text = "Markers: " + (profiler.State != ProfilerState.Ready ? profiler.Markers.Count().ToString() : "0");
@@ -300,6 +305,40 @@ namespace jPerf
             if (openFileDialog.FileName != "")
             {
                 this.profiler.AddMarkers(MarkerBuilder.FromMetashapeLogFile(openFileDialog.FileName, this.profiler.StartTime, log));
+                UpdateView(true);
+            }
+        }
+
+        private void agisoftDelighterRemoveShadingLogtxtToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            OpenFileDialog openFileDialog = new OpenFileDialog();
+            openFileDialog.Filter = "Delighter Log File|*.txt|Log File|*.log";
+            openFileDialog.Title = "Open Delighter Remove Shading Log file";
+            openFileDialog.ShowDialog();
+
+            if (openFileDialog.FileName != "")
+            {
+                this.profiler.AddMarkers(MarkerBuilder.FromDelighterRemoveShadingLogFile(openFileDialog.FileName, this.profiler.StartTime, log));
+                UpdateView(true);
+            }
+        }
+
+        private void viewMarkerListToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            MarkerListView markerListView = new MarkerListView(profiler.Markers);
+            markerListView.Show();
+        }
+
+        private void agisoftDelighterRemoveCastShadowsLogtxtToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            OpenFileDialog openFileDialog = new OpenFileDialog();
+            openFileDialog.Filter = "Delighter Log File|*.txt|Log File|*.log";
+            openFileDialog.Title = "Open Delighter Remove Cast Shadows Log file";
+            openFileDialog.ShowDialog();
+
+            if (openFileDialog.FileName != "")
+            {
+                this.profiler.AddMarkers(MarkerBuilder.FromDelighterRemoveCastShadowsLogFile(openFileDialog.FileName, this.profiler.StartTime, log));
                 UpdateView(true);
             }
         }

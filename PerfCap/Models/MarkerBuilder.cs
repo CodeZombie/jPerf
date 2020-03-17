@@ -49,6 +49,116 @@ namespace jPerf
             return markers;
         }
 
+        private static List<Marker> ProcessStep(List<string> textData, string name, string startString, string endString, DateTime startTime, Log log)
+        {
+            int startMarkerIndex = -1;
+            int endMarkerIndex = -1;
+            string startTimeString = "";
+            string endTimeString = "";
+            List<Marker> markers = new List<Marker>();
+
+            foreach (var line in textData.Select((x, i) => new { Value = x, Index = i }))
+            {
+                if (line.Value.Contains(startString))
+                {
+                    startMarkerIndex = line.Index;
+                    startTimeString = line.Value.Substring(0, 19);
+                    break;
+                }
+            }
+
+            var index = startMarkerIndex;
+            while (index<textData.Count)
+            {
+                if (textData[index].Contains(endString))
+                {
+                    endMarkerIndex = index;
+                    endTimeString = textData[index].Substring(0, 19);
+                    break;
+                }
+                index++;
+            }
+
+            if (startMarkerIndex != -1)
+            {
+                markers.Add(new Marker(name, DateTime.ParseExact(startTimeString, "yyyy-MM-dd HH:mm:ss", new System.Globalization.CultureInfo("en-US")).Subtract(startTime).TotalMilliseconds));
+            }
+            else
+            {
+                log.AddLine("Could not find Start Index for log line '" + name + "'");
+            }
+
+            if (endMarkerIndex != -1)
+            {
+                markers.Add(new Marker("END: " + name, DateTime.ParseExact(endTimeString, "yyyy-MM-dd HH:mm:ss", new System.Globalization.CultureInfo("en-US")).Subtract(startTime).TotalMilliseconds));
+            }
+            else
+            {
+                log.AddLine("Could not find End Index for log line '" + name + "'");
+            }
+
+            return markers;
+        }
+
+        private static List<Marker> ProcessSingleLine(List<string> textData, string name, string startString, DateTime startTime) 
+        {
+            string startTimeString = "";
+            string endTimeString = "";
+            List<Marker> markers = new List<Marker>();
+
+            var index = 0;
+            while (index < textData.Count)
+            {
+                if (textData[index].Contains(startString))
+                {
+                    startTimeString = textData[index].Substring(0, 19);
+                    if (index < textData.Count())
+                    {
+                        endTimeString = textData[index + 1].Substring(0, 19);
+                    }
+                    break;
+                }
+                index++;
+            }
+
+            markers.Add(new Marker(name, DateTime.ParseExact(startTimeString, "yyyy-MM-dd HH:mm:ss", new System.Globalization.CultureInfo("en-US")).Subtract(startTime).TotalMilliseconds));
+            markers.Add(new Marker("END: " + name, DateTime.ParseExact(endTimeString, "yyyy-MM-dd HH:mm:ss", new System.Globalization.CultureInfo("en-US")).Subtract(startTime).TotalMilliseconds));
+            return markers;
+        } 
+
+        public static List<Marker> FromDelighterRemoveShadingLogFile(string filename, DateTime startTime, Log log)
+        {
+            log.AddLine("Adding Markers from Delighter Remove Shading Log File...");
+
+            List<string> textData = MarkerBuilder.LoadDataAsStringList(filename);
+            List<Marker> markers = new List<Marker>();
+
+            markers.AddRange(ProcessStep(textData, "Remove Shading", "RemoveLightingInteractive: ", "(exit code 1)", startTime, log));
+            markers.AddRange(ProcessStep(textData, "Calculating Angular Data", "Calculating angular data...", "Angular data calculated in ", startTime, log));
+            markers.AddRange(ProcessStep(textData, "Calculating Scale", "Calculating scale...", "Scale calculated in ", startTime, log));
+            markers.AddRange(ProcessStep(textData, "Suppressing Highlights", "Suppressing highlights...", "Highlights suppressed in ", startTime, log));
+            return markers;
+        }
+
+        public static List<Marker> FromDelighterRemoveCastShadowsLogFile(string filename, DateTime startTime, Log log)
+        {
+            log.AddLine("Adding Markers from Delighter Remove Cast Shadows Log File...");
+
+            List<string> textData = MarkerBuilder.LoadDataAsStringList(filename);
+            List<Marker> markers = new List<Marker>();
+
+            markers.AddRange(ProcessStep(textData, "Remove Cast Shadows", "RemoveLightingInteractive: ", "(exit code 1)", startTime, log));
+            markers.AddRange(ProcessStep(textData, "Repairing Atlas", "Repairing atlas...", "Atlas repaired in ", startTime, log));
+            markers.AddRange(ProcessStep(textData, "Baking matt", "Baking matting...", "Matting baked in ", startTime, log));
+            markers.AddRange(ProcessStep(textData, "Baking Shadow Masks", "Baking shadow masks...", "Shadow masks baked in ", startTime, log));
+            markers.AddRange(ProcessStep(textData, "Inpainting Penumbra", "Inpainting penumbra...", "Penumbra inpainted in ", startTime, log));
+
+            
+            markers.AddRange(ProcessStep(textData, "Supressing Unknown Colors", "Suppressing unknown colors...", "Unknown colors suppressed in ", startTime, log));
+
+            return markers;
+        }
+
         public static List<Marker> FromMetashapeLogFile(string filename, DateTime startTime, Log log)
         {
             log.AddLine("Adding Markers from Metashape Log File...");
@@ -56,113 +166,18 @@ namespace jPerf
             List<string> textData = MarkerBuilder.LoadDataAsStringList(filename);
             List<Marker> markers = new List<Marker>();
 
-            Func<string, string, int> processSingleLine = (string name, string startString) =>
-            {
-                string startTimeString = "";
-                string endTimeString = "";
+            markers.AddRange(ProcessStep(textData, "Build Points", "Matching photos...", "(exit code 1)", startTime, log));
+            markers.AddRange(ProcessStep(textData, "Build Dense Cloud", "BuildDenseCloud: ", "(exit code 1)", startTime, log));
+            markers.AddRange(ProcessStep(textData, "Build Mesh", "BuildModel: ", "(exit code 1)", startTime, log));
+            markers.AddRange(ProcessStep(textData, "Set Tree", "Tree depth:", "Tree set in ", startTime, log));
+            markers.AddRange(ProcessStep(textData, "Laplacian Constraints", "Leaves/Nodes: ", "Laplacian constraints set in ", startTime, log));
+            markers.AddRange(ProcessStep(textData, "Linear System", "Depth[0/", "Linear system solved in ", startTime, log));
+            markers.AddRange(ProcessStep(textData, "Build Texture", "BuildTexture: ", "(exit code 1)", startTime, log));
 
-                var index = 0;
-                while (index < textData.Count)
-                {
-                    if (textData[index].Contains(startString))
-                    {
-                        startTimeString = textData[index].Substring(0, 19);
-                        if (index < textData.Count())
-                        {
-                            endTimeString = textData[index + 1].Substring(0, 19);
-                        }
-                        break;
-                    }
-                    index++;
-                }
+            markers.AddRange(ProcessSingleLine(textData, "Extracting faces", "faces extracted in ", startTime));
+            markers.AddRange(ProcessSingleLine(textData, "Decimating mesh", "Decimating mesh...", startTime));
+            markers.AddRange(ProcessSingleLine(textData, "Calculate Colors", "calculating colors...", startTime));
 
-                markers.Add(new Marker(name, DateTime.ParseExact(startTimeString, "yyyy-MM-dd HH:mm:ss", new System.Globalization.CultureInfo("en-US")).Subtract(startTime).TotalMilliseconds));
-                markers.Add(new Marker("END: " + name, DateTime.ParseExact(endTimeString, "yyyy-MM-dd HH:mm:ss", new System.Globalization.CultureInfo("en-US")).Subtract(startTime).TotalMilliseconds));
-                return 0;
-            };
-
-            Func<string, string, string, int> processStep = (string name, string startString, string endString) => 
-            {
-                int startMarkerIndex = -1;
-                int endMarkerIndex = -1;
-                string startTimeString = "";
-                string endTimeString = "";
-
-                foreach (var line in textData.Select((x, i) => new { Value = x, Index = i }))
-                {
-                    if (line.Value.Contains(startString))
-                    {
-                        startMarkerIndex = line.Index;
-                        startTimeString = line.Value.Substring(0, 19);
-                        break;
-                    }
-                }
-
-                var index = startMarkerIndex;
-                while (index < textData.Count)
-                {
-                    if (textData[index].Contains(endString))
-                    {
-                        endMarkerIndex = index;
-                        endTimeString = textData[index].Substring(0, 19);
-                        Console.WriteLine(endTimeString);
-                        break;
-                    }
-                    index++;
-                }
-
-
-                if(startMarkerIndex == -1) { return -1; }
-                if(endMarkerIndex == -1) { return -1; }
-
-                markers.Add(new Marker(name, DateTime.ParseExact(startTimeString, "yyyy-MM-dd HH:mm:ss", new System.Globalization.CultureInfo("en-US")).Subtract(startTime).TotalMilliseconds));
-                markers.Add(new Marker("END: " + name, DateTime.ParseExact(endTimeString, "yyyy-MM-dd HH:mm:ss", new System.Globalization.CultureInfo("en-US")).Subtract(startTime).TotalMilliseconds));
-                return 0;
-            };
-
-            if(processStep("Build Points", "Matching photos...", "(exit code 1)") == -1)
-            {
-                log.AddLine("Could not find Build Points markers");
-                return null;
-            }
-
-            if (processStep("Build Dense Cloud", "BuildDenseCloud: ", "(exit code 1)") == -1)
-            {
-                log.AddLine("Could not find Build Dense Cloud markers");
-                return null;
-            }
-            if(processStep("Build Mesh", "BuildModel: ", "(exit code 1)") == -1)
-            {
-                log.AddLine("Could not find Build Mesh markers");
-                return null;
-            }
-                if (processStep("Set Tree", "Tree depth:", "Tree set in ") == -1)
-                {
-                    log.AddLine("Could not find Set Tree markers");
-                    return null;
-                }
-                if (processStep("Laplacian Constraints", "Leaves/Nodes: ", "Laplacian constraints set in ") == -1)
-                {
-                    log.AddLine("Could not find Laplace markers");
-                    return null;
-                }
-                if (processStep("Linear System", "Depth[0/", "Linear system solved in ") == -1)
-                {
-                    log.AddLine("Could not find Linear System markers");
-                    return null;
-                }
-                processSingleLine("Extracting faces", "faces extracted in ");
-                processSingleLine("Decimating mesh", "Decimating mesh...");
-
-
-            if (processStep("Build Texture", "BuildTexture: ", "(exit code 1)") == -1)
-            {
-                log.AddLine("Could not find Build Texture markers");
-                return null;
-            }
-            
-            processSingleLine("Calculate Colors", "calculating colors...");
-            
             return markers;
         }
 

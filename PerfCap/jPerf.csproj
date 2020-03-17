@@ -114,6 +114,9 @@
     <Compile Include="Views\LogView.cs">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Include="Views\MarkerListView.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="Views\MarkerPrompt.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -151,6 +154,9 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <SubType>Designer</SubType>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Views\MarkerListView.resx">
+      <DependentUpon>MarkerListView.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Views\MarkerPrompt.resx">
       <DependentUpon>MarkerPrompt.cs</DependentUpon>

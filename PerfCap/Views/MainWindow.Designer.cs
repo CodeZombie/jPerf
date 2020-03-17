@@ -39,6 +39,10 @@ namespace jPerf
             this.importToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.jPMImportToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.mergeJPerfCaptureFileJPCToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
+            this.agisoftMetashapeLogFiletxtToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.agisoftDelighterRemoveShadingLogtxtToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.agisoftDelighterRemoveCastShadowsLogtxtToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.saveToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -77,7 +81,6 @@ namespace jPerf
             this.markerCountStatusLabel = new System.Windows.Forms.ToolStripStatusLabel();
             this.timeUnitStatus = new System.Windows.Forms.ToolStripStatusLabel();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
-            this.agisoftMetashapeLogFiletxtToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStrip1.SuspendLayout();
             this.statusStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
@@ -137,7 +140,10 @@ namespace jPerf
             this.importToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.jPMImportToolStripMenuItem,
             this.mergeJPerfCaptureFileJPCToolStripMenuItem,
-            this.agisoftMetashapeLogFiletxtToolStripMenuItem});
+            this.toolStripSeparator3,
+            this.agisoftMetashapeLogFiletxtToolStripMenuItem,
+            this.agisoftDelighterRemoveShadingLogtxtToolStripMenuItem,
+            this.agisoftDelighterRemoveCastShadowsLogtxtToolStripMenuItem});
             this.importToolStripMenuItem.Name = "importToolStripMenuItem";
             this.importToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.importToolStripMenuItem.Text = "Import";
@@ -145,16 +151,42 @@ namespace jPerf
             // jPMImportToolStripMenuItem
             // 
             this.jPMImportToolStripMenuItem.Name = "jPMImportToolStripMenuItem";
-            this.jPMImportToolStripMenuItem.Size = new System.Drawing.Size(245, 22);
+            this.jPMImportToolStripMenuItem.Size = new System.Drawing.Size(336, 22);
             this.jPMImportToolStripMenuItem.Text = "JPerf Marker File (.JPM)";
             this.jPMImportToolStripMenuItem.Click += new System.EventHandler(this.jPMImportToolStripMenuItem_Click);
             // 
             // mergeJPerfCaptureFileJPCToolStripMenuItem
             // 
             this.mergeJPerfCaptureFileJPCToolStripMenuItem.Name = "mergeJPerfCaptureFileJPCToolStripMenuItem";
-            this.mergeJPerfCaptureFileJPCToolStripMenuItem.Size = new System.Drawing.Size(245, 22);
+            this.mergeJPerfCaptureFileJPCToolStripMenuItem.Size = new System.Drawing.Size(336, 22);
             this.mergeJPerfCaptureFileJPCToolStripMenuItem.Text = "Merge jPerf Capture File (.JPC)";
             this.mergeJPerfCaptureFileJPCToolStripMenuItem.Click += new System.EventHandler(this.mergeJPerfCaptureFileJPCToolStripMenuItem_Click);
+            // 
+            // toolStripSeparator3
+            // 
+            this.toolStripSeparator3.Name = "toolStripSeparator3";
+            this.toolStripSeparator3.Size = new System.Drawing.Size(333, 6);
+            // 
+            // agisoftMetashapeLogFiletxtToolStripMenuItem
+            // 
+            this.agisoftMetashapeLogFiletxtToolStripMenuItem.Name = "agisoftMetashapeLogFiletxtToolStripMenuItem";
+            this.agisoftMetashapeLogFiletxtToolStripMenuItem.Size = new System.Drawing.Size(336, 22);
+            this.agisoftMetashapeLogFiletxtToolStripMenuItem.Text = "Agisoft Metashape Log File (.txt)";
+            this.agisoftMetashapeLogFiletxtToolStripMenuItem.Click += new System.EventHandler(this.agisoftMetashapeLogFiletxtToolStripMenuItem_Click);
+            // 
+            // agisoftDelighterRemoveShadingLogtxtToolStripMenuItem
+            // 
+            this.agisoftDelighterRemoveShadingLogtxtToolStripMenuItem.Name = "agisoftDelighterRemoveShadingLogtxtToolStripMenuItem";
+            this.agisoftDelighterRemoveShadingLogtxtToolStripMenuItem.Size = new System.Drawing.Size(336, 22);
+            this.agisoftDelighterRemoveShadingLogtxtToolStripMenuItem.Text = "Agisoft Delighter Remove Shading Log (.txt)";
+            this.agisoftDelighterRemoveShadingLogtxtToolStripMenuItem.Click += new System.EventHandler(this.agisoftDelighterRemoveShadingLogtxtToolStripMenuItem_Click);
+            // 
+            // agisoftDelighterRemoveCastShadowsLogtxtToolStripMenuItem
+            // 
+            this.agisoftDelighterRemoveCastShadowsLogtxtToolStripMenuItem.Name = "agisoftDelighterRemoveCastShadowsLogtxtToolStripMenuItem";
+            this.agisoftDelighterRemoveCastShadowsLogtxtToolStripMenuItem.Size = new System.Drawing.Size(336, 22);
+            this.agisoftDelighterRemoveCastShadowsLogtxtToolStripMenuItem.Text = "Agisoft Delighter Remove Cast Shadows Log (.txt)";
+            this.agisoftDelighterRemoveCastShadowsLogtxtToolStripMenuItem.Click += new System.EventHandler(this.agisoftDelighterRemoveCastShadowsLogtxtToolStripMenuItem_Click);
             // 
             // saveToolStripMenuItem
             // 
@@ -243,6 +275,7 @@ namespace jPerf
             this.viewMarkerListToolStripMenuItem.Name = "viewMarkerListToolStripMenuItem";
             this.viewMarkerListToolStripMenuItem.Size = new System.Drawing.Size(139, 22);
             this.viewMarkerListToolStripMenuItem.Text = "Edit Markers";
+            this.viewMarkerListToolStripMenuItem.Click += new System.EventHandler(this.viewMarkerListToolStripMenuItem_Click);
             // 
             // clearAllToolStripMenuItem
             // 
@@ -487,13 +520,6 @@ namespace jPerf
             this.pictureBox1.TabIndex = 7;
             this.pictureBox1.TabStop = false;
             // 
-            // agisoftMetashapeLogFiletxtToolStripMenuItem
-            // 
-            this.agisoftMetashapeLogFiletxtToolStripMenuItem.Name = "agisoftMetashapeLogFiletxtToolStripMenuItem";
-            this.agisoftMetashapeLogFiletxtToolStripMenuItem.Size = new System.Drawing.Size(245, 22);
-            this.agisoftMetashapeLogFiletxtToolStripMenuItem.Text = "Agisoft Metashape Log File (.txt)";
-            this.agisoftMetashapeLogFiletxtToolStripMenuItem.Click += new System.EventHandler(this.agisoftMetashapeLogFiletxtToolStripMenuItem_Click);
-            // 
             // MainWindow
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -563,6 +589,9 @@ namespace jPerf
         private ToolStripMenuItem resetViewToolStripMenuItem;
         private ToolStripMenuItem mergeJPerfCaptureFileJPCToolStripMenuItem;
         private ToolStripMenuItem agisoftMetashapeLogFiletxtToolStripMenuItem;
+        private ToolStripSeparator toolStripSeparator3;
+        private ToolStripMenuItem agisoftDelighterRemoveShadingLogtxtToolStripMenuItem;
+        private ToolStripMenuItem agisoftDelighterRemoveCastShadowsLogtxtToolStripMenuItem;
     }
 }
 

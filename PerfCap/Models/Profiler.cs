@@ -105,7 +105,7 @@ namespace PerfCap.Model
 
             this.State = ProfilerState.Recording;
             this.Stopwatch.Start();
-            this.StartTime = DateTime.Now;
+            this.StartTime = DateTime.UtcNow;
             this.updateTimer.Start();
         }
 
@@ -120,21 +120,6 @@ namespace PerfCap.Model
             this.State = ProfilerState.Stopped;
             this.Stopwatch.Stop();
         }
-        /*
-        public void AddMarkerFile(string JsonString, Log log)
-        {
-            log.AddLine("Parsing jPerf Marker File");
-            dynamic data = JsonConvert.DeserializeObject<dynamic>(JsonString);
-
-            foreach (dynamic marker in data)
-            {
-                DateTime time = DateTime.ParseExact((string)marker.time, "yyyy-MM-dd HH:mm:ss", new System.Globalization.CultureInfo("en-US"));
-                if(time >= this.StartTime)
-                {
-                    this.Markers.Add(new Marker((string)marker.title, time.Subtract(this.StartTime).TotalMilliseconds));
-                }
-            }
-        }*/
 
         public void AddMarkers(List<Marker> markers)
         {
