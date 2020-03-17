@@ -137,6 +137,10 @@ namespace jPerf
             markers.AddRange(ProcessStep(textData, "Calculating Angular Data", "Calculating angular data...", "Angular data calculated in ", startTime, log));
             markers.AddRange(ProcessStep(textData, "Calculating Scale", "Calculating scale...", "Scale calculated in ", startTime, log));
             markers.AddRange(ProcessStep(textData, "Suppressing Highlights", "Suppressing highlights...", "Highlights suppressed in ", startTime, log));
+            markers.AddRange(ProcessSingleLine(textData, "Calculating Ambient Occlusions", "Calculating ambient occlusion...", startTime));
+            
+
+
             return markers;
         }
 
