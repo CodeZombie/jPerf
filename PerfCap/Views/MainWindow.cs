@@ -77,6 +77,8 @@ namespace jPerf
             agisoftDelighterRemoveCastShadowsLogtxtToolStripMenuItem.Enabled                = this.profiler.State == ProfilerState.Stopped;
             viewMarkerListToolStripMenuItem.Enabled                                         = this.profiler.State == ProfilerState.Stopped;
 
+            startTimeStatusLabel.Text = "Start Time: " + (profiler.State == ProfilerState.Ready ? "Not Started" : profiler.StartTime.ToLongTimeString());
+
             sampleCountStatusLabel.Text = "Samples: " + (profiler.State != ProfilerState.Ready ? profiler.GetSampleCount().ToString() : "0");
             markerCountStatusLabel.Text = "Markers: " + (profiler.State != ProfilerState.Ready ? profiler.Markers.Count().ToString() : "0");
 

@@ -138,9 +138,7 @@ namespace jPerf
             markers.AddRange(ProcessStep(textData, "Calculating Scale", "Calculating scale...", "Scale calculated in ", startTime, log));
             markers.AddRange(ProcessStep(textData, "Suppressing Highlights", "Suppressing highlights...", "Highlights suppressed in ", startTime, log));
             markers.AddRange(ProcessSingleLine(textData, "Calculating Ambient Occlusions", "Calculating ambient occlusion...", startTime));
-            
-
-
+         
             return markers;
         }
 
@@ -157,7 +155,6 @@ namespace jPerf
             markers.AddRange(ProcessStep(textData, "Baking Shadow Masks", "Baking shadow masks...", "Shadow masks baked in ", startTime, log));
             markers.AddRange(ProcessStep(textData, "Inpainting Penumbra", "Inpainting penumbra...", "Penumbra inpainted in ", startTime, log));
 
-            
             markers.AddRange(ProcessStep(textData, "Supressing Unknown Colors", "Suppressing unknown colors...", "Unknown colors suppressed in ", startTime, log));
 
             return markers;

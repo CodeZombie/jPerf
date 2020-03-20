@@ -105,7 +105,7 @@ namespace PerfCap.Model
 
             this.State = ProfilerState.Recording;
             this.Stopwatch.Start();
-            this.StartTime = DateTime.UtcNow;
+            this.StartTime = DateTime.UtcNow.ToLocalTime();
             this.updateTimer.Start();
         }
 

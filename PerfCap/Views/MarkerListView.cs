@@ -74,6 +74,7 @@ namespace jPerf.Views
             this.Controls.Add(this.statusStrip1);
             this.Controls.Add(this.listView1);
             this.Name = "MarkerListView";
+            this.Text = "Marker View";
             this.statusStrip1.ResumeLayout(false);
             this.statusStrip1.PerformLayout();
             this.ResumeLayout(false);

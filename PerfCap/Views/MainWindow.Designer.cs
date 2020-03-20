@@ -80,6 +80,7 @@ namespace jPerf
             this.sampleCountStatusLabel = new System.Windows.Forms.ToolStripStatusLabel();
             this.markerCountStatusLabel = new System.Windows.Forms.ToolStripStatusLabel();
             this.timeUnitStatus = new System.Windows.Forms.ToolStripStatusLabel();
+            this.startTimeStatusLabel = new System.Windows.Forms.ToolStripStatusLabel();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.toolStrip1.SuspendLayout();
             this.statusStrip1.SuspendLayout();
@@ -124,14 +125,14 @@ namespace jPerf
             // newToolStripMenuItem
             // 
             this.newToolStripMenuItem.Name = "newToolStripMenuItem";
-            this.newToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.newToolStripMenuItem.Size = new System.Drawing.Size(110, 22);
             this.newToolStripMenuItem.Text = "New";
             this.newToolStripMenuItem.Click += new System.EventHandler(this.newToolStripMenuItem_Click);
             // 
             // openToolStripMenuItem
             // 
             this.openToolStripMenuItem.Name = "openToolStripMenuItem";
-            this.openToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.openToolStripMenuItem.Size = new System.Drawing.Size(110, 22);
             this.openToolStripMenuItem.Text = "Open";
             this.openToolStripMenuItem.Click += new System.EventHandler(this.openToolStripMenuItem_Click);
             // 
@@ -145,7 +146,7 @@ namespace jPerf
             this.agisoftDelighterRemoveShadingLogtxtToolStripMenuItem,
             this.agisoftDelighterRemoveCastShadowsLogtxtToolStripMenuItem});
             this.importToolStripMenuItem.Name = "importToolStripMenuItem";
-            this.importToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.importToolStripMenuItem.Size = new System.Drawing.Size(110, 22);
             this.importToolStripMenuItem.Text = "Import";
             // 
             // jPMImportToolStripMenuItem
@@ -191,19 +192,19 @@ namespace jPerf
             // saveToolStripMenuItem
             // 
             this.saveToolStripMenuItem.Name = "saveToolStripMenuItem";
-            this.saveToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.saveToolStripMenuItem.Size = new System.Drawing.Size(110, 22);
             this.saveToolStripMenuItem.Text = "Save";
             this.saveToolStripMenuItem.Click += new System.EventHandler(this.saveToolStripMenuItem_Click);
             // 
             // toolStripSeparator1
             // 
             this.toolStripSeparator1.Name = "toolStripSeparator1";
-            this.toolStripSeparator1.Size = new System.Drawing.Size(177, 6);
+            this.toolStripSeparator1.Size = new System.Drawing.Size(107, 6);
             // 
             // exitToolStripMenuItem
             // 
             this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
-            this.exitToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.exitToolStripMenuItem.Size = new System.Drawing.Size(110, 22);
             this.exitToolStripMenuItem.Text = "Exit";
             this.exitToolStripMenuItem.Click += new System.EventHandler(this.exitToolStripMenuItem_Click);
             // 
@@ -469,7 +470,8 @@ namespace jPerf
             this.statusText,
             this.sampleCountStatusLabel,
             this.markerCountStatusLabel,
-            this.timeUnitStatus});
+            this.timeUnitStatus,
+            this.startTimeStatusLabel});
             this.statusStrip1.Location = new System.Drawing.Point(0, 328);
             this.statusStrip1.Name = "statusStrip1";
             this.statusStrip1.Size = new System.Drawing.Size(609, 22);
@@ -507,6 +509,12 @@ namespace jPerf
             this.timeUnitStatus.Name = "timeUnitStatus";
             this.timeUnitStatus.Size = new System.Drawing.Size(108, 17);
             this.timeUnitStatus.Text = "Time Unit: Seconds";
+            // 
+            // startTimeStatusLabel
+            // 
+            this.startTimeStatusLabel.Name = "startTimeStatusLabel";
+            this.startTimeStatusLabel.Size = new System.Drawing.Size(124, 17);
+            this.startTimeStatusLabel.Text = "Start time: Not Started";
             // 
             // pictureBox1
             // 
@@ -592,6 +600,7 @@ namespace jPerf
         private ToolStripSeparator toolStripSeparator3;
         private ToolStripMenuItem agisoftDelighterRemoveShadingLogtxtToolStripMenuItem;
         private ToolStripMenuItem agisoftDelighterRemoveCastShadowsLogtxtToolStripMenuItem;
+        private ToolStripStatusLabel startTimeStatusLabel;
     }
 }
 

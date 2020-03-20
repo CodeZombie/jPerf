@@ -26,7 +26,7 @@ namespace PerfCap.Model
                 Text = "";
             }
 
-            Text += Environment.NewLine + DateTime.Now.ToShortTimeString() + ": " + s;
+            Text += Environment.NewLine + DateTime.UtcNow.ToLocalTime().ToShortTimeString() + ": " + s;
             length++;
 
             foreach (ILogSubscriber subscriber in Subscribers)
